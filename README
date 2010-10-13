@@ -1,0 +1,34 @@
+nvents - Open source library for strongly typed publishing/subscribing of events over the network.
+
+Release history:
+ 0.1 2010-11-12
+	* initial release
+
+
+Sample code
+
+using System;
+using Nvents;
+
+namespace NventsSample
+{
+  class Program
+  {
+    static void Main(string[] args)
+    {
+      // subscribe to events
+      Events.Subscribe<FooEvent>(
+        e => Console.WriteLine(e.Bar));
+
+      // publish events
+      Events.Publish(new FooEvent { Bar = "FooBar" });
+
+      Console.ReadLine();
+    }
+  }
+
+  public class FooEvent : IEvent
+  {
+    public string Bar { get; set; }
+  }
+}
