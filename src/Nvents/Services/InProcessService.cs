@@ -7,11 +7,11 @@ namespace Nvents.Services
 {
 	public class InProcessService : IService
 	{
-		List<Handler> handlers = new List<Handler>();
+		List<EventHandler> handlers = new List<EventHandler>();
 
 		public void Subscribe<TEvent>(Action<TEvent> action) where TEvent : class, IEvent
 		{
-			var handler = new Handler();
+			var handler = new EventHandler();
 			handler.SetHandler(action);
 			handlers.Add(handler);
 		}
@@ -41,20 +41,6 @@ namespace Nvents.Services
 		public void Stop()
 		{
 			IsStarted = false;
-		}
-
-		private class Handler
-		{
-			public void SetHandler<TEvent>(Action<TEvent> action) where TEvent : class, IEvent
-			{
-				Action = e =>
-				{
-					action(e as TEvent);
-				};
-				EventType = typeof(TEvent);
-			}
-			public Type EventType { get; private set; }
-			public Action<IEvent> Action { get; private set; }
 		}
 	}
 }

@@ -2,7 +2,6 @@ using System;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using System.ServiceModel.Discovery;
-using System.Net.Sockets;
 using System.Net;
 
 namespace Nvents.Services.Network
@@ -11,12 +10,24 @@ namespace Nvents.Services.Network
 	public class EventServiceHost : IEventServiceHost
 	{
 		ServiceHost host;
+		IPAddress ipAddress;
+		int port;
+
+		public EventServiceHost(IPAddress ipAddress, int port)
+		{
+			this.ipAddress = ipAddress;
+			this.port = port;
+		}
 
 		public void Start(IEventService instance)
 		{
 			if (host != null)
 				throw new NotSupportedException("Service has already started.");
-			CreateServiceHost(instance, GetIpAddress(), GetFreeTcpPort());
+			if (port < 1 || port > 65535)
+				throw new ArgumentOutOfRangeException("port");
+			if (ipAddress == null)
+				throw new ArgumentNullException("ipaddress");
+			CreateServiceHost(instance);
 			host.Open();
 		}
 
@@ -30,12 +41,12 @@ namespace Nvents.Services.Network
 
 		public bool IsStarted { get; private set; }
 
-		private void CreateServiceHost(IEventService instance, string ipaddress, int port)
+		private void CreateServiceHost(IEventService instance)
 		{
 			host = new ServiceHost(instance,
 				new Uri(string.Format(
 					"net.tcp://{0}:{1}/Nvents.Services.Network/{2}",
-					ipaddress,
+					ipAddress,
 					port,
 					Guid.NewGuid())));
 			host.AddServiceEndpoint(
@@ -55,26 +66,6 @@ namespace Nvents.Services.Network
 
 			host.Opened += (s, e) => IsStarted = true;
 			host.Closed += (s, e) => IsStarted = false;
-		}
-
-		private int GetFreeTcpPort()
-		{
-			var listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 0);
-			listener.Start();
-			int port = ((IPEndPoint)listener.LocalEndpoint).Port;
-			listener.Stop();
-			return port;
-		}
-
-		private string GetIpAddress()
-		{
-			foreach (var ip in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
-			{
-				if (ip.AddressFamily != AddressFamily.InterNetwork)
-					continue;
-				return ip.ToString();
-			}
-			throw new NotSupportedException("Can not start without a valid network.");
 		}
 	}
 }

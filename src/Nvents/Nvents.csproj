@@ -47,9 +47,11 @@
     <Compile Include="Events.cs" />
     <Compile Include="IEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\EventHandler.cs" />
     <Compile Include="Services\InProcessService.cs" />
     <Compile Include="Services\IService.cs" />
     <Compile Include="Services\AutoNetworkService.cs" />
+    <Compile Include="Services\NetworkService.cs" />
     <Compile Include="Services\Network\EventPublishedEventArgs.cs" />
     <Compile Include="Services\Network\EventService.cs" />
     <Compile Include="Services\Network\EventServiceClient.cs" />

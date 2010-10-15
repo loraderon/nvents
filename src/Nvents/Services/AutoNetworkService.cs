@@ -1,81 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Nvents.Services.Network;
+using System.Net;
+using System.Net.Sockets;
 
 namespace Nvents.Services
 {
-	public class AutoNetworkService : IService
+	public class AutoNetworkService : NetworkService
 	{
-		List<Handler> handlers = new List<Handler>();
-		EventService server;
-		IEventServiceHost host;
-		IEventService client;
-
 		public AutoNetworkService()
+			: base(GetIpAddress(), GetFreeTcpPort())
+		{ }
+
+		private static int GetFreeTcpPort()
 		{
-			server = new EventService();
-			client = new MultiEventServiceClient();
-
-			host = new EventServiceHost();
-
-			server.EventPublished += server_EventPublished;
+			var listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 0);
+			listener.Start();
+			int port = ((IPEndPoint)listener.LocalEndpoint).Port;
+			listener.Stop();
+			return port;
 		}
 
-		void server_EventPublished(object sender, EventPublishedEventArgs e)
+		private static IPAddress GetIpAddress()
 		{
-			foreach (var handler in handlers
-				.Where(x => x.EventType == e.Event.GetType()))
+			foreach (var ip in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
 			{
-				try
-				{
-					handler.Action(e.Event);
-				}
-				catch { }
+				if (ip.AddressFamily != AddressFamily.InterNetwork)
+					continue;
+				return ip;
 			}
-		}
-
-		public void Subscribe<TEvent>(Action<TEvent> action) where TEvent : class, IEvent
-		{
-			var handler = new Handler();
-			handler.SetHandler(action);
-			handlers.Add(handler);
-		}
-
-		public void Unsubscribe<TEvent>() where TEvent : class, IEvent
-		{
-			handlers.RemoveAll(x => x.EventType == typeof(TEvent));
-		}
-
-		public bool IsStarted { get { return host != null && host.IsStarted; } }
-
-		public void Publish(IEvent e)
-		{
-			client.Publish(e);
-		}
-
-		public void Start()
-		{
-			host.Start(server);
-		}
-
-		public void Stop()
-		{
-			host.Stop();
-		}
-
-		private class Handler
-		{
-			public void SetHandler<TEvent>(Action<TEvent> action) where TEvent : class, IEvent
-			{
-				Action = e =>
-				{
-					action(e as TEvent);
-				};
-				EventType = typeof(TEvent);
-			}
-			public Type EventType { get; private set; }
-			public Action<IEvent> Action { get; private set; }
+			throw new NotSupportedException("Can not start without a valid network.");
 		}
 	}
 }
