@@ -49,9 +49,11 @@ namespace Nvents.Services.Network
 					ipAddress,
 					port,
 					Guid.NewGuid())));
+			var binding = new NetTcpBinding(SecurityMode.None);
+			binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
 			host.AddServiceEndpoint(
 				typeof(IEventService),
-				new NetTcpBinding(),
+				binding,
 				"EventService");
 
 			var discoveryBehavior = new ServiceDiscoveryBehavior();

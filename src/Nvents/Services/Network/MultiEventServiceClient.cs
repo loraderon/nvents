@@ -32,7 +32,9 @@ namespace Nvents.Services.Network
 		{
 			foreach (var address in GetAddresses())
 			{
-				yield return new EventServiceClient(new NetTcpBinding(), address);
+				var binding = new NetTcpBinding(SecurityMode.None);
+				binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
+				yield return new EventServiceClient(binding, address);
 			}
 		}
 
