@@ -51,6 +51,7 @@ namespace Nvents.Services.Network
 					Guid.NewGuid())));
 			var binding = new NetTcpBinding(SecurityMode.None);
 			binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
+			binding.ReliableSession.Enabled = true;
 			host.AddServiceEndpoint(
 				typeof(IEventService),
 				binding,

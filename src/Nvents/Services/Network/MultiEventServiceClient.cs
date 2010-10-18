@@ -34,6 +34,7 @@ namespace Nvents.Services.Network
 			{
 				var binding = new NetTcpBinding(SecurityMode.None);
 				binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
+				binding.ReliableSession.Enabled = true;
 				yield return new EventServiceClient(binding, address);
 			}
 		}
