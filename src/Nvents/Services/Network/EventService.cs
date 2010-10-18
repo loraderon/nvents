@@ -1,5 +1,6 @@
 using System;
 using System.ServiceModel;
+using System.Threading;
 
 namespace Nvents.Services.Network
 {
@@ -12,8 +13,10 @@ namespace Nvents.Services.Network
 
 		public void Publish(IEvent @event)
 		{
-			if (EventPublished != null)
-				EventPublished(this, new EventPublishedEventArgs(@event));
+			if (EventPublished == null)
+				return;
+			ThreadPool.QueueUserWorkItem(s =>
+				EventPublished(null, new EventPublishedEventArgs(@event)));
 		}
 	}
 }
