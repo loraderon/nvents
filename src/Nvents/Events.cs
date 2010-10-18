@@ -24,10 +24,11 @@ namespace Nvents
 		/// </summary>
 		/// <typeparam name="TEvent">The event type to subscribe for.</typeparam>
 		/// <param name="action">Action to perfom when event is published.</param>
-		public static void Subscribe<TEvent>(Action<TEvent> action) where TEvent : class, IEvent
+		/// <param name="filter">Optional filter action.</param>
+		public static void Subscribe<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter = null) where TEvent : class, IEvent
 		{
 			EnsureService();
-			service.Subscribe(action);
+			service.Subscribe(action, filter);
 		}
 
 		/// <summary>

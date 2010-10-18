@@ -106,6 +106,32 @@ namespace Nvents.Tests
 			Assert.False(raised);
 		}
 
+		[Fact]
+		public void CanFilterEvents()
+		{
+			int raised1 = 0;
+			Events.Subscribe<FooEvent>(
+				e => raised1++);
+
+			int raised2 = 0;
+			Events.Subscribe<FooEvent>(
+				e => raised2++,
+				e => e.Baz == "Filtered");
+
+			var started = DateTime.Now;
+			Events.Publish(new FooEvent());
+			Events.Publish(new FooEvent { Baz = "Filtered" });
+
+			var timeout = TimeSpan.FromSeconds(3);
+			while ((DateTime.Now - started) < timeout)
+			{
+				Thread.Sleep(100);
+			}
+
+			Assert.Equal(2, raised1);
+			Assert.Equal(1, raised2);
+		}
+
 		public EventsTests()
 		{
 			// reset configuration for each test

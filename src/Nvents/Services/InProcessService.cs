@@ -9,10 +9,10 @@ namespace Nvents.Services
 	{
 		List<EventHandler> handlers = new List<EventHandler>();
 
-		public void Subscribe<TEvent>(Action<TEvent> action) where TEvent : class, IEvent
+		public void Subscribe<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter = null) where TEvent : class, IEvent
 		{
 			var handler = new EventHandler();
-			handler.SetHandler(action);
+			handler.SetHandler(action, filter);
 			handlers.Add(handler);
 		}
 

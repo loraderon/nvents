@@ -5,7 +5,7 @@ namespace Nvents.Tests
 {
 	public class DummyService : IService
 	{
-		public void Subscribe<TEvent>(Action<TEvent> action) where TEvent : class, IEvent
+		public void Subscribe<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter = null) where TEvent : class, IEvent
 		{ }
 
 		public void Unsubscribe<TEvent>() where TEvent : class, IEvent
