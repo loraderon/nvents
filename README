@@ -1,7 +1,11 @@
 nvents - Open source library for strongly typed publishing/subscribing of events over the network.
 
 Release history:
- 0.1 2010-11-12
+ 0.2 2010-10-18
+	* Fixed security exception
+	* NetworkService to explicity set IPAddress and port
+	* Only requiring .NET Framework 4 Client Profile
+ 0.1 2010-10-12
 	* initial release
 
 
