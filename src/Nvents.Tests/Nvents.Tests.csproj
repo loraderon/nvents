@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BarEvent.cs" />
+    <Compile Include="DummyHandler.cs" />
     <Compile Include="DummyService.cs" />
     <Compile Include="EventsTests.cs" />
     <Compile Include="FooEvent.cs" />
