@@ -41,6 +41,17 @@ namespace Nvents
 			service.Unsubscribe<TEvent>();
 		}
 
+		/// <summary>
+		/// Register an event handler.
+		/// </summary>
+		/// <typeparam name="TEvent">The event type for the handler.</typeparam>
+		/// <param name="handler">The event handler.</param>
+		public static void RegisterHandler<TEvent>(IHandler<TEvent> handler) where TEvent : class, IEvent
+		{
+			Subscribe<TEvent>(
+				e => handler.Handle(e));
+		}
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static IService Service
 		{
