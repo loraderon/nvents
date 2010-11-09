@@ -16,7 +16,7 @@ namespace Nvents.Tests
 			var started = DateTime.Now;
 			Events.Publish(new FooEvent());
 
-			var timeout = TimeSpan.FromSeconds(2);
+			var timeout = TimeSpan.FromSeconds(3);
 			while (!raised && (DateTime.Now - started) < timeout)
 			{
 				Thread.Sleep(100);
@@ -148,6 +148,26 @@ namespace Nvents.Tests
 
 			Assert.Equal(2, raised1);
 			Assert.Equal(1, raised2);
+		}
+
+		[Fact]
+		public void CanPublishEncryptedEvents()
+		{
+			Events.Service = new Nvents.Services.AutoNetworkService("encryption-key");
+			var raised = false;
+			Events.Subscribe<FooEvent>(
+				e => raised = true);
+
+			var started = DateTime.Now;
+			Events.Publish(new FooEvent());
+
+			var timeout = TimeSpan.FromSeconds(3);
+			while (!raised && (DateTime.Now - started) < timeout)
+			{
+				Thread.Sleep(100);
+			}
+
+			Assert.True(raised, "FooEvent was not raised witin the given timeout " + timeout);
 		}
 
 		public EventsTests()

@@ -11,6 +11,7 @@ namespace Nvents.Services.Network
 	{
 		public event EventHandler<EventPublishedEventArgs> EventPublished;
 
+		[EncryptableNetDataContractFormatAttribute]
 		public void Publish(IEvent @event)
 		{
 			if (EventPublished == null)

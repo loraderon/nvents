@@ -8,11 +8,10 @@ using System.Xml;
 
 namespace Nvents.Services.Network
 {
-	public class NetDataContractFormatAttribute : Attribute, IOperationBehavior
+	public class EncryptableNetDataContractFormatAttribute : Attribute, IOperationBehavior
 	{
 		public void AddBindingParameters(OperationDescription description, BindingParameterCollection parameters)
-		{
-		}
+		{ }
 
 		public void ApplyClientBehavior(OperationDescription description, ClientOperation proxy)
 		{
@@ -24,33 +23,38 @@ namespace Nvents.Services.Network
 			ReplaceDataContractSerializerOperationBehavior(description);
 		}
 		public void Validate(OperationDescription description)
-		{
-		}
+		{ }
 
 		private static void ReplaceDataContractSerializerOperationBehavior(OperationDescription description)
 		{
-			DataContractSerializerOperationBehavior dcs = description.Behaviors.Find<DataContractSerializerOperationBehavior>();
+			var dcs = description.Behaviors.Find<DataContractSerializerOperationBehavior>();
 
 			if (dcs != null)
 				description.Behaviors.Remove(dcs);
 
-			description.Behaviors.Add(new NetDataContractSerializerOperationBehavior(description));
+			var encryptionBehavior = description.Behaviors.Find<EncryptionBehavior>();
+
+			description.Behaviors.Add(new EncryptableNetDataContractSerializerOperationBehavior(description, encryptionBehavior.EncryptionKey));
 		}
 
-		public class NetDataContractSerializerOperationBehavior : DataContractSerializerOperationBehavior
+		public class EncryptableNetDataContractSerializerOperationBehavior : DataContractSerializerOperationBehavior
 		{
-			private static NetDataContractSerializer serializer = new NetDataContractSerializer();
+			string encryptionKey;
 
-			public NetDataContractSerializerOperationBehavior(OperationDescription operationDescription) : base(operationDescription) { }
+			public EncryptableNetDataContractSerializerOperationBehavior(OperationDescription operationDescription, string encryptionKey)
+				: base(operationDescription)
+			{
+				this.encryptionKey = encryptionKey;
+			}
 
 			public override XmlObjectSerializer CreateSerializer(Type type, string name, string ns, IList<Type> knownTypes)
 			{
-				return NetDataContractSerializerOperationBehavior.serializer;
+				return new EncryptableNetDataContractSerializer(encryptionKey);
 			}
 
 			public override XmlObjectSerializer CreateSerializer(Type type, XmlDictionaryString name, XmlDictionaryString ns, IList<Type> knownTypes)
 			{
-				return NetDataContractSerializerOperationBehavior.serializer;
+				return new EncryptableNetDataContractSerializer(encryptionKey);
 			}
 		}
 	}

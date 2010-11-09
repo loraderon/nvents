@@ -53,14 +53,15 @@
     <Compile Include="Services\IService.cs" />
     <Compile Include="Services\AutoNetworkService.cs" />
     <Compile Include="Services\NetworkService.cs" />
+    <Compile Include="Services\Network\EncryptableNetDataContractSerializer.cs" />
+    <Compile Include="Services\Network\EncryptionBehavior.cs" />
     <Compile Include="Services\Network\EventPublishedEventArgs.cs" />
     <Compile Include="Services\Network\EventService.cs" />
-    <Compile Include="Services\Network\EventServiceClient.cs" />
     <Compile Include="Services\Network\EventServiceHost.cs" />
     <Compile Include="Services\Network\IEventService.cs" />
     <Compile Include="Services\Network\IEventServiceHost.cs" />
     <Compile Include="Services\Network\MultiEventServiceClient.cs" />
-    <Compile Include="Services\Network\NetDataContractFormatAttribute.cs" />
+    <Compile Include="Services\Network\EncryptableNetDataContractFormatAttribute.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -9,34 +9,42 @@ namespace Nvents.Services.Network
 {
 	public class MultiEventServiceClient : IEventService
 	{
+		string encryptionKey;
+
+		public MultiEventServiceClient(string encryptionKey)
+		{
+			this.encryptionKey = encryptionKey;
+		}
+
 		public void Publish(IEvent @event)
 		{
 			foreach (var server in GetServers())
 			{
 				ThreadPool.QueueUserWorkItem(state =>
 				{
-					var s = state as EventServiceClient;
+					var s = state as IEventService;
 					PublishToServer(s, @event);
 				}, server);
 			}
 		}
 
-		private void PublishToServer(EventServiceClient server, IEvent @event)
+		private void PublishToServer(IEventService server, IEvent @event)
 		{
-			server.Open();
+			var connection = server as ICommunicationObject;
+			connection.Open();
 			server.Publish(@event);
-			server.Close();
+			connection.Close();
 		}
 
-		private IEnumerable<EventServiceClient> GetServers()
+		private IEnumerable<IEventService> GetServers()
 		{
+			var binding = new NetTcpBinding(SecurityMode.None);
+			binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
+			binding.ReliableSession.Enabled = true;
+			var factory = new ChannelFactory<IEventService>(binding);
+			factory.Endpoint.Contract.Operations[0].Behaviors.Add(new EncryptionBehavior { EncryptionKey = encryptionKey });
 			foreach (var address in GetAddresses())
-			{
-				var binding = new NetTcpBinding(SecurityMode.None);
-				binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
-				binding.ReliableSession.Enabled = true;
-				yield return new EventServiceClient(binding, address);
-			}
+				yield return factory.CreateChannel(address);
 		}
 
 		private static IEnumerable<EndpointAddress> GetAddresses()

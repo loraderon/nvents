@@ -13,12 +13,12 @@ namespace Nvents.Services
 		IEventServiceHost host;
 		IEventService client;
 
-		public NetworkService(IPAddress ipAddress, int port)
+		public NetworkService(IPAddress ipAddress, int port, string encryptionKey = null)
 		{
 			server = new EventService();
-			client = new MultiEventServiceClient();
+			client = new MultiEventServiceClient(encryptionKey);
 
-			host = new EventServiceHost(ipAddress, port);
+			host = new EventServiceHost(ipAddress, port, encryptionKey);
 
 			server.EventPublished += server_EventPublished;
 		}
@@ -52,6 +52,8 @@ namespace Nvents.Services
 
 		public void Publish(IEvent e)
 		{
+			if (!IsStarted)
+				throw new NotSupportedException("Service is not started.");
 			client.Publish(e);
 		}
 

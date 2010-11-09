@@ -12,11 +12,13 @@ namespace Nvents.Services.Network
 		ServiceHost host;
 		IPAddress ipAddress;
 		int port;
+		string encryptionKey;
 
-		public EventServiceHost(IPAddress ipAddress, int port)
+		public EventServiceHost(IPAddress ipAddress, int port, string encryptionKey)
 		{
 			this.ipAddress = ipAddress;
 			this.port = port;
+			this.encryptionKey = encryptionKey;
 		}
 
 		public void Start(IEventService instance)
@@ -66,6 +68,8 @@ namespace Nvents.Services.Network
 			{
 				MaxConcurrentSessions = 1000
 			});
+
+			host.Description.Endpoints[0].Contract.Operations[0].Behaviors.Add(new EncryptionBehavior { EncryptionKey = encryptionKey });
 
 			host.Opened += (s, e) => IsStarted = true;
 			host.Closed += (s, e) => IsStarted = false;
