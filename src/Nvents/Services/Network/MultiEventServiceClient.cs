@@ -7,13 +7,18 @@ using System.Threading;
 
 namespace Nvents.Services.Network
 {
-	public class MultiEventServiceClient : IEventService
+	public class MultiEventServiceClient : IEventService, IDisposable
 	{
-		string encryptionKey;
+		ChannelFactory<IEventService> factory;
+		Dictionary<EndpointAddress, IEventService> servers = new Dictionary<EndpointAddress, IEventService>();
 
 		public MultiEventServiceClient(string encryptionKey)
 		{
-			this.encryptionKey = encryptionKey;
+			var binding = new NetTcpBinding(SecurityMode.None);
+			binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
+			binding.ReliableSession.Enabled = true;
+			factory = new ChannelFactory<IEventService>(binding);
+			factory.Endpoint.Contract.Operations[0].Behaviors.Add(new EncryptionBehavior { EncryptionKey = encryptionKey });
 		}
 
 		public void Publish(IEvent @event)
@@ -23,28 +28,31 @@ namespace Nvents.Services.Network
 				ThreadPool.QueueUserWorkItem(state =>
 				{
 					var s = state as IEventService;
-					PublishToServer(s, @event);
+					s.Publish(@event);
 				}, server);
 			}
 		}
 
-		private void PublishToServer(IEventService server, IEvent @event)
-		{
-			var connection = server as ICommunicationObject;
-			connection.Open();
-			server.Publish(@event);
-			connection.Close();
-		}
-
 		private IEnumerable<IEventService> GetServers()
 		{
-			var binding = new NetTcpBinding(SecurityMode.None);
-			binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
-			binding.ReliableSession.Enabled = true;
-			var factory = new ChannelFactory<IEventService>(binding);
-			factory.Endpoint.Contract.Operations[0].Behaviors.Add(new EncryptionBehavior { EncryptionKey = encryptionKey });
+			foreach (var server in servers.Values)
+			{
+				yield return server;
+			}
+
 			foreach (var address in GetAddresses())
-				yield return factory.CreateChannel(address);
+			{
+				if (servers.ContainsKey(address))
+					continue;
+
+				var server = factory.CreateChannel(address);
+				var connection = server as ICommunicationObject;
+				connection.Faulted += (s, e) => servers.Remove(address);
+				connection.Closing += (s, e) => servers.Remove(address);
+				connection.Open();
+				servers[address] = server;
+				yield return server;
+			}
 		}
 
 		private static IEnumerable<EndpointAddress> GetAddresses()
@@ -54,6 +62,19 @@ namespace Nvents.Services.Network
 				var discoveryResponse = discoveryClient.Find(new FindCriteria(typeof(IEventService)) { Duration = TimeSpan.FromMilliseconds(500) });
 				return discoveryResponse.Endpoints.Select(x => x.Address);
 			}
+		}
+
+		public void Dispose()
+		{
+			foreach (var server in servers.Values.ToArray())
+			{
+				var connection = server as ICommunicationObject;
+				if (connection.State == CommunicationState.Opened)
+					connection.Close();
+			}
+			var disposable = factory as IDisposable;
+			if (disposable != null)
+				disposable.Dispose();
 		}
 	}
 }

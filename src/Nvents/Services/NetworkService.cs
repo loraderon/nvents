@@ -11,16 +11,22 @@ namespace Nvents.Services
 		List<EventHandler> handlers = new List<EventHandler>();
 		EventService server;
 		IEventServiceHost host;
-		IEventService client;
+		MultiEventServiceClient client;
+		string encryptionKey;
 
 		public NetworkService(IPAddress ipAddress, int port, string encryptionKey = null)
 		{
+			this.encryptionKey = encryptionKey;
 			server = new EventService();
-			client = new MultiEventServiceClient(encryptionKey);
-
+			CreateClient();
 			host = new EventServiceHost(ipAddress, port, encryptionKey);
 
 			server.EventPublished += server_EventPublished;
+		}
+
+		private void CreateClient()
+		{
+			client = new MultiEventServiceClient(encryptionKey);
 		}
 
 		void server_EventPublished(object sender, EventPublishedEventArgs e)
@@ -60,10 +66,12 @@ namespace Nvents.Services
 		public void Start()
 		{
 			host.Start(server);
+			CreateClient();
 		}
 
 		public void Stop()
 		{
+			client.Dispose();
 			host.Stop();
 		}
 	}

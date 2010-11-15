@@ -170,6 +170,30 @@ namespace Nvents.Tests
 			Assert.True(raised, "FooEvent was not raised witin the given timeout " + timeout);
 		}
 
+		[Fact]
+		public void CanPublishMultipleEvents()
+		{
+			var events = 3;
+
+			var raised = 0;
+			Events.Subscribe<FooEvent>(
+				e => raised++);
+
+			var started = DateTime.Now;
+			for (int i = 0; i < events; i++)
+			{
+				Events.Publish(new FooEvent());
+			}
+
+			var timeout = TimeSpan.FromSeconds(3);
+			while (raised != events && (DateTime.Now - started) < timeout)
+			{
+				Thread.Sleep(100);
+			}
+
+			Assert.Equal(events, raised);
+		}
+
 		public EventsTests()
 		{
 			// reset configuration for each test
