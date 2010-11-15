@@ -11,6 +11,7 @@ namespace Nvents.Services.Network
 	{
 		ChannelFactory<IEventService> factory;
 		Dictionary<EndpointAddress, IEventService> servers = new Dictionary<EndpointAddress, IEventService>();
+		ReaderWriterLockSlim locker = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
 		public MultiEventServiceClient(string encryptionKey)
 		{
@@ -35,11 +36,13 @@ namespace Nvents.Services.Network
 
 		private IEnumerable<IEventService> GetServers()
 		{
-			foreach (var server in servers.Values)
+			locker.EnterUpgradeableReadLock();
+			foreach (var server in servers.Values.ToArray())
 			{
 				yield return server;
 			}
 
+			locker.EnterWriteLock();
 			foreach (var address in GetAddresses())
 			{
 				if (servers.ContainsKey(address))
@@ -47,15 +50,29 @@ namespace Nvents.Services.Network
 
 				var server = factory.CreateChannel(address);
 				var connection = server as ICommunicationObject;
-				connection.Faulted += (s, e) => servers.Remove(address);
-				connection.Closing += (s, e) => servers.Remove(address);
+				connection.Faulted += connection_FaultedOrClosing;
+				connection.Closing += connection_FaultedOrClosing;
 				connection.Open();
 				servers[address] = server;
 				yield return server;
 			}
+			locker.ExitWriteLock();
+			locker.ExitUpgradeableReadLock();
 		}
 
-		private static IEnumerable<EndpointAddress> GetAddresses()
+		private void connection_FaultedOrClosing(object sender, EventArgs e)
+		{
+			locker.EnterWriteLock();
+			var server = sender as IEventService;
+			if (servers.ContainsValue(server))
+			{
+				var address = servers.Single(x => x.Value == server).Key;
+				servers.Remove(address);
+			}
+			locker.ExitWriteLock();
+		}
+
+		private IEnumerable<EndpointAddress> GetAddresses()
 		{
 			using (var discoveryClient = new DiscoveryClient(new UdpDiscoveryEndpoint()))
 			{
@@ -66,12 +83,14 @@ namespace Nvents.Services.Network
 
 		public void Dispose()
 		{
+			locker.EnterWriteLock();
 			foreach (var server in servers.Values.ToArray())
 			{
 				var connection = server as ICommunicationObject;
 				if (connection.State == CommunicationState.Opened)
 					connection.Close();
 			}
+			locker.ExitWriteLock();
 			var disposable = factory as IDisposable;
 			if (disposable != null)
 				disposable.Dispose();

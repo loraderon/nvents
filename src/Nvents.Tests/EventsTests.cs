@@ -194,6 +194,30 @@ namespace Nvents.Tests
 			Assert.Equal(events, raised);
 		}
 
+		[Fact]
+		public void CanPublishMultipleEventsInParalell()
+		{
+			var events = 10;
+
+			var raised = 0;
+			Events.Subscribe<FooEvent>(
+				e => raised++);
+
+			var started = DateTime.Now;
+			System.Threading.Tasks.Parallel.For(0, events, i =>
+			{
+				Events.Publish(new FooEvent());
+			});
+
+			var timeout = TimeSpan.FromSeconds(5);
+			while (raised != events && (DateTime.Now - started) < timeout)
+			{
+				Thread.Sleep(100);
+			}
+
+			Assert.Equal(events, raised);
+		}
+
 		public EventsTests()
 		{
 			// reset configuration for each test
