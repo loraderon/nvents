@@ -1,6 +1,8 @@
 nvents - Open source library for strongly typed publishing/subscribing of events over the network.
 
 Release history:
+ 0.3 2010-11-09
+	* Added encryption, handlers and filters http://nvents.org/post/2010/11/09/Encryption-handlers-and-filters-in-version-03.aspx
  0.2 2010-10-18
 	* Fixed security exception
 	* NetworkService to explicity set IPAddress and port
