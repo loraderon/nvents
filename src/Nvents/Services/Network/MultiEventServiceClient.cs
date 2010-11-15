@@ -12,6 +12,7 @@ namespace Nvents.Services.Network
 		ChannelFactory<IEventService> factory;
 		Dictionary<EndpointAddress, IEventService> servers = new Dictionary<EndpointAddress, IEventService>();
 		ReaderWriterLockSlim locker = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+		DateTime lastDiscoveryLookup = DateTime.Now.AddDays(-1);
 
 		public MultiEventServiceClient(string encryptionKey)
 		{
@@ -74,6 +75,11 @@ namespace Nvents.Services.Network
 
 		private IEnumerable<EndpointAddress> GetAddresses()
 		{
+			var now = DateTime.Now;
+			if (now - lastDiscoveryLookup < TimeSpan.FromSeconds(1))
+				return new EndpointAddress[0];
+
+			lastDiscoveryLookup = now;
 			using (var discoveryClient = new DiscoveryClient(new UdpDiscoveryEndpoint()))
 			{
 				var discoveryResponse = discoveryClient.Find(new FindCriteria(typeof(IEventService)) { Duration = TimeSpan.FromMilliseconds(500) });
