@@ -37,7 +37,8 @@ namespace Nvents.Services.Network
 		{
 			if (host == null)
 				return;
-			host.Close();
+			if (host.State == CommunicationState.Opened)
+				host.Close();
 			host = null;
 		}
 
