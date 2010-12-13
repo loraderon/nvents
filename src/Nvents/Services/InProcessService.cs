@@ -12,7 +12,7 @@ namespace Nvents.Services
 				.Where(x => ShouldEventBeHandled(x, e)))
 			{
 				ThreadPool.QueueUserWorkItem(s =>
-					handler.Action(e));
+				  	((EventHandler)s).Action(e), handler);
 			}
 		}
 	}
