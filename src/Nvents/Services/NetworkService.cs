@@ -40,7 +40,7 @@ namespace Nvents.Services
 			}
 		}
 
-		public override void Publish(IEvent e)
+		public override void Publish<TEvent>(TEvent e)
 		{
 			if (!IsStarted)
 				throw new NotSupportedException("Service is not started.");

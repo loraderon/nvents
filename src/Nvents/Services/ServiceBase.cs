@@ -19,7 +19,7 @@ namespace Nvents.Services
 			handlers.RemoveAll(x => x.EventType == typeof(TEvent));
 		}
 
-		public abstract void Publish(IEvent e);
+		public abstract void Publish<TEvent>(TEvent e) where TEvent : class, IEvent;
 
 		protected virtual void OnStart() { }
 

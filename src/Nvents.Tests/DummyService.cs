@@ -13,7 +13,7 @@ namespace Nvents.Tests
 
 		public bool IsStarted { get; private set; }
 
-		public void Publish(IEvent e)
+		public void Publish<TEvent>(TEvent e) where TEvent : class, IEvent
 		{
 			PublishWasCalled = true;
 		}

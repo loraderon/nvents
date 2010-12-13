@@ -6,13 +6,13 @@ namespace Nvents.Services
 {
 	public class InProcessService : ServiceBase
 	{
-		public override void Publish(IEvent e)
+		public override void Publish<TEvent>(TEvent e)
 		{
 			foreach (var handler in handlers
 				.Where(x => ShouldEventBeHandled(x, e)))
 			{
 				ThreadPool.QueueUserWorkItem(s =>
-				  	((EventHandler)s).Action(e), handler);
+					((EventHandler)s).Action(e), handler);
 			}
 		}
 	}
