@@ -2,7 +2,7 @@ using System;
 
 namespace Nvents.Services
 {
-	internal class EventHandler
+	public class EventHandler
 	{
 		public void SetHandler<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter) where TEvent : class, IEvent
 		{

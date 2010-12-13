@@ -1,14 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Nvents.Services.Network;
 
 namespace Nvents.Services
 {
-	public class NetworkService : IService
+	public class NetworkService : ServiceBase
 	{
-		List<EventHandler> handlers = new List<EventHandler>();
 		EventService server;
 		IEventServiceHost host;
 		MultiEventServiceClient client;
@@ -32,7 +30,7 @@ namespace Nvents.Services
 		void server_EventPublished(object sender, EventPublishedEventArgs e)
 		{
 			foreach (var handler in handlers
-				.Where(x => x.EventType == e.Event.GetType()))
+				.Where(x => ShouldEventBeHandled(x, e.Event)))
 			{
 				try
 				{
@@ -42,34 +40,20 @@ namespace Nvents.Services
 			}
 		}
 
-		public void Subscribe<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter = null) where TEvent : class, IEvent
-		{
-			var handler = new EventHandler();
-			handler.SetHandler(action, filter);
-			handlers.Add(handler);
-		}
-
-		public void Unsubscribe<TEvent>() where TEvent : class, IEvent
-		{
-			handlers.RemoveAll(x => x.EventType == typeof(TEvent));
-		}
-
-		public bool IsStarted { get { return host != null && host.IsStarted; } }
-
-		public void Publish(IEvent e)
+		public override void Publish(IEvent e)
 		{
 			if (!IsStarted)
 				throw new NotSupportedException("Service is not started.");
 			client.Publish(e);
 		}
 
-		public void Start()
+		protected override void OnStart()
 		{
 			host.Start(server);
 			CreateClient();
 		}
 
-		public void Stop()
+		protected override void OnStop()
 		{
 			client.Dispose();
 			host.Stop();
