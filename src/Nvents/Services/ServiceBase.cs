@@ -41,7 +41,9 @@ namespace Nvents.Services
 
 		protected bool ShouldEventBeHandled(EventHandler handler, IEvent e)
 		{
-			return handler.EventType == e.GetType();
+			var eventType = e.GetType();
+			return handler.EventType == eventType
+				|| eventType.IsSubclassOf(handler.EventType);
 		}
 	}
 }

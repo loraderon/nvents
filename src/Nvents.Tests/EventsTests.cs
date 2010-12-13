@@ -218,6 +218,30 @@ namespace Nvents.Tests
 			Assert.Equal(events, raised);
 		}
 
+		[Fact]
+		public void CanSubscribeToInheritedEvents()
+		{
+			Events.Service = new Services.InProcessService();
+			var foos = 0;
+			var fooChilds = 0;
+
+			Events.Subscribe<FooEvent>(e => foos++);
+			Events.Subscribe<FooChildEvent>(e => fooChilds++);
+
+			var started = DateTime.Now;
+			Events.Publish(new FooEvent());
+			Events.Publish(new FooChildEvent());
+
+			var timeout = TimeSpan.FromMilliseconds(200);
+			while ((DateTime.Now - started) < timeout)
+			{
+				Thread.Sleep(100);
+			}
+
+			Assert.Equal(2, foos);
+			Assert.Equal(1, fooChilds);
+		}
+
 		public EventsTests()
 		{
 			// reset configuration for each test
