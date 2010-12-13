@@ -43,7 +43,8 @@ namespace Nvents.Services
 		{
 			var eventType = e.GetType();
 			return handler.EventType == eventType
-				|| eventType.IsSubclassOf(handler.EventType);
+				|| eventType.IsSubclassOf(handler.EventType)
+				|| eventType.GetInterface(handler.EventType.Name) == handler.EventType;
 		}
 	}
 }

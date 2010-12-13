@@ -224,13 +224,16 @@ namespace Nvents.Tests
 			Events.Service = new Services.InProcessService();
 			var foos = 0;
 			var fooChilds = 0;
+			var i = 0;
 
+			Events.Subscribe<IEvent>(e => i++);
 			Events.Subscribe<FooEvent>(e => foos++);
 			Events.Subscribe<FooChildEvent>(e => fooChilds++);
 
 			var started = DateTime.Now;
 			Events.Publish(new FooEvent());
 			Events.Publish(new FooChildEvent());
+			Events.Publish(new BarEvent());
 
 			var timeout = TimeSpan.FromMilliseconds(200);
 			while ((DateTime.Now - started) < timeout)
@@ -238,6 +241,7 @@ namespace Nvents.Tests
 				Thread.Sleep(100);
 			}
 
+			Assert.Equal(3, i);
 			Assert.Equal(2, foos);
 			Assert.Equal(1, fooChilds);
 		}
