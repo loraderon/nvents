@@ -49,6 +49,7 @@
     <Compile Include="DummyService.cs" />
     <Compile Include="EncryptionTests.cs" />
     <Compile Include="EventsTests.cs" />
+    <Compile Include="EventSubscriptionTests.cs" />
     <Compile Include="FooChildEvent.cs" />
     <Compile Include="FooEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
