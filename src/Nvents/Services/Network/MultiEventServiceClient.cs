@@ -30,7 +30,14 @@ namespace Nvents.Services.Network
 				ThreadPool.QueueUserWorkItem(state =>
 				{
 					var s = state as IEventService;
-					s.Publish(@event);
+					try
+					{
+						s.Publish(@event);
+					}
+					catch (TimeoutException)
+					{
+						RemoveServer(s);
+					}
 				}, server);
 			}
 		}
@@ -57,7 +64,7 @@ namespace Nvents.Services.Network
 				{
 					connection.Open();
 				}
-				catch (Exception ex)
+				catch (EndpointNotFoundException)
 				{
 					continue;
 				}
@@ -70,8 +77,13 @@ namespace Nvents.Services.Network
 
 		private void connection_FaultedOrClosing(object sender, EventArgs e)
 		{
-			locker.EnterWriteLock();
 			var server = sender as IEventService;
+			RemoveServer(server);
+		}
+
+		private void RemoveServer(IEventService server)
+		{
+			locker.EnterWriteLock();
 			if (servers.ContainsValue(server))
 			{
 				var address = servers.Single(x => x.Value == server).Key;
