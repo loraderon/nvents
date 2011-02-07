@@ -53,7 +53,14 @@ namespace Nvents.Services.Network
 				var connection = server as ICommunicationObject;
 				connection.Faulted += connection_FaultedOrClosing;
 				connection.Closing += connection_FaultedOrClosing;
-				connection.Open();
+				try
+				{
+					connection.Open();
+				}
+				catch (Exception ex)
+				{
+					continue;
+				}
 				servers[address] = server;
 				yield return server;
 			}
