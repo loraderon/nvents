@@ -204,10 +204,11 @@ namespace Nvents.Tests
 				e => raised++);
 
 			var started = DateTime.Now;
-			System.Threading.Tasks.Parallel.For(0, events, i =>
+			for (int i = 0; i < events; i++)
 			{
-				Events.Publish(new FooEvent());
-			});
+				ThreadPool.QueueUserWorkItem(_ =>
+					Events.Publish(new FooEvent()));
+			}
 
 			var timeout = TimeSpan.FromSeconds(5);
 			while (raised != events && (DateTime.Now - started) < timeout)

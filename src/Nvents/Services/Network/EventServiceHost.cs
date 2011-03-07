@@ -1,7 +1,9 @@
 using System;
 using System.ServiceModel;
 using System.ServiceModel.Description;
+#if NET40
 using System.ServiceModel.Discovery;
+#endif
 using System.Net;
 
 namespace Nvents.Services.Network
@@ -59,11 +61,13 @@ namespace Nvents.Services.Network
 				typeof(IEventService),
 				binding,
 				"EventService");
-
+#if NET40
 			var discoveryBehavior = new ServiceDiscoveryBehavior();
 			host.Description.Behaviors.Add(discoveryBehavior);
 			host.AddServiceEndpoint(new UdpDiscoveryEndpoint());
 			discoveryBehavior.AnnouncementEndpoints.Add(new UdpAnnouncementEndpoint());
+#else
+#endif
 
 			host.Description.Behaviors.Add(new ServiceThrottlingBehavior
 			{

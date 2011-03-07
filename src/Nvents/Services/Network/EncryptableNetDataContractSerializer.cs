@@ -81,12 +81,20 @@ namespace Nvents.Services.Network
 
 		private SymmetricAlgorithm CreateSymmetricAlgorithm(string password)
 		{
-			using (var pdb = new PasswordDeriveBytes(password, new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }))
+			var pdb = new PasswordDeriveBytes(password, new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+			try
 			{
 				var AESE = new AesManaged();
 				AESE.Key = pdb.GetBytes(AESE.KeySize / 8);
 				AESE.IV = pdb.GetBytes(AESE.BlockSize / 8);
 				return AESE;
+			}
+			finally
+			{
+#if NET40
+				if (pdb != null)
+					pdb.Dispose();
+#endif
 			}
 		}
 

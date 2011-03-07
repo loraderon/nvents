@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
+#if NET40
 using System.ServiceModel.Discovery;
+#endif
 using System.Threading;
 
 namespace Nvents.Services.Network
@@ -99,11 +101,15 @@ namespace Nvents.Services.Network
 				return new EndpointAddress[0];
 
 			lastDiscoveryLookup = now;
+#if NET40
 			using (var discoveryClient = new DiscoveryClient(new UdpDiscoveryEndpoint()))
 			{
 				var discoveryResponse = discoveryClient.Find(new FindCriteria(typeof(IEventService)) { Duration = TimeSpan.FromMilliseconds(500) });
 				return discoveryResponse.Endpoints.Select(x => x.Address);
 			}
+#else
+			return new EndpointAddress[0];
+#endif
 		}
 
 		public void Dispose()
