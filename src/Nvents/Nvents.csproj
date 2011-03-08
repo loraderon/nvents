@@ -20,7 +20,6 @@
     <TargetFrameworkVersionNumber>3.5</TargetFrameworkVersionNumber>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">
-    <DefineConstants>NET40</DefineConstants>
     <TargetFrameworkVersionNumber>4.0</TargetFrameworkVersionNumber>
   </PropertyGroup>
 

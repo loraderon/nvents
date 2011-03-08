@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
-#if NET40
+#if !NET35
 using System.ServiceModel.Discovery;
 #endif
 using System.Threading;
@@ -101,7 +101,7 @@ namespace Nvents.Services.Network
 				return new EndpointAddress[0];
 
 			lastDiscoveryLookup = now;
-#if NET40
+#if !NET35
 			using (var discoveryClient = new DiscoveryClient(new UdpDiscoveryEndpoint()))
 			{
 				var discoveryResponse = discoveryClient.Find(new FindCriteria(typeof(IEventService)) { Duration = TimeSpan.FromMilliseconds(500) });

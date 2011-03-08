@@ -91,7 +91,7 @@ namespace Nvents.Services.Network
 			}
 			finally
 			{
-#if NET40
+#if !NET35
 				if (pdb != null)
 					pdb.Dispose();
 #endif

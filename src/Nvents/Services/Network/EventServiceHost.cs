@@ -1,7 +1,7 @@
 using System;
 using System.ServiceModel;
 using System.ServiceModel.Description;
-#if NET40
+#if !NET35
 using System.ServiceModel.Discovery;
 #endif
 using System.Net;
@@ -61,7 +61,7 @@ namespace Nvents.Services.Network
 				typeof(IEventService),
 				binding,
 				"EventService");
-#if NET40
+#if !NET35
 			var discoveryBehavior = new ServiceDiscoveryBehavior();
 			host.Description.Behaviors.Add(discoveryBehavior);
 			host.AddServiceEndpoint(new UdpDiscoveryEndpoint());
