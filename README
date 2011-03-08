@@ -1,8 +1,9 @@
 nvents - Open source library for strongly typed publishing/subscribing of events over the network.
-
+=====
 Release history:
+----------------
  0.6 2011-03-08
-	* Added support for .NET 3.5 (custom udp based service locator)
+	* Added support for .NET 3.5 (custom udp based service locator) http://nvents.org/post/2011/03/09/nvents-06-now-runs-on-NET-35-and-40.aspx
  0.5 2011-02-07
 	* Fixed Issue #1 "WCF Timeout Exception"
 	* Added EventSubscription<TEvent> to simplify standard .NET events
@@ -20,28 +21,28 @@ Release history:
 
 Sample code
 
-using System;
-using Nvents;
+	using System;
+	using Nvents;
+	
+	namespace NventsSample
+	{
+	  class Program
+	  {
+		static void Main(string[] args)
+		{
+		  // subscribe to events
+		  Events.Subscribe<FooEvent>(
+			e => Console.WriteLine(e.Bar));
 
-namespace NventsSample
-{
-  class Program
-  {
-    static void Main(string[] args)
-    {
-      // subscribe to events
-      Events.Subscribe<FooEvent>(
-        e => Console.WriteLine(e.Bar));
+		  // publish events
+		  Events.Publish(new FooEvent { Bar = "FooBar" });
 
-      // publish events
-      Events.Publish(new FooEvent { Bar = "FooBar" });
+		  Console.ReadLine();
+		}
+	  }
 
-      Console.ReadLine();
-    }
-  }
-
-  public class FooEvent : IEvent
-  {
-    public string Bar { get; set; }
-  }
-}
+	  public class FooEvent : IEvent
+	  {
+		public string Bar { get; set; }
+	  }
+	}
