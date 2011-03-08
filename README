@@ -1,6 +1,11 @@
 nvents - Open source library for strongly typed publishing/subscribing of events over the network.
 
 Release history:
+ 0.6 2011-03-08
+	* Added support for .NET 3.5 (custom udp based service locator)
+ 0.5 2011-02-07
+	* Fixed Issue #1 "WCF Timeout Exception"
+	* Added EventSubscription<TEvent> to simplify standard .NET events
  0.4 2010-12-13
 	* Increased performance and added inheritance support http://nvents.org/post/2010/12/13/Performance-improvements-and-inheritance-support-in-nvents-04.aspx
  0.3 2010-11-09
