@@ -210,7 +210,7 @@ namespace Nvents.Tests
 					Events.Publish(new FooEvent()));
 			}
 
-			var timeout = TimeSpan.FromSeconds(5);
+			var timeout = TimeSpan.FromSeconds(15);
 			while (raised != events && (DateTime.Now - started) < timeout)
 			{
 				Thread.Sleep(100);

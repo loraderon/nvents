@@ -15,6 +15,9 @@ namespace Nvents.Services.Network
 		IPAddress ipAddress;
 		int port;
 		string encryptionKey;
+#if NET35
+		ServiceDiscoverer.ServiceDiscoverer discoverer;
+#endif
 
 		public EventServiceHost(IPAddress ipAddress, int port, string encryptionKey)
 		{
@@ -42,18 +45,26 @@ namespace Nvents.Services.Network
 			if (host.State == CommunicationState.Opened)
 				host.Close();
 			host = null;
+			
+#if NET35
+			if (discoverer == null)
+				return;
+			discoverer.Stop();
+			discoverer = null;
+#endif
 		}
 
 		public bool IsStarted { get; private set; }
 
 		private void CreateServiceHost(IEventService instance)
 		{
+			var guid = Guid.NewGuid();
 			host = new ServiceHost(instance,
 				new Uri(string.Format(
 					"net.tcp://{0}:{1}/Nvents.Services.Network/{2}",
 					ipAddress,
 					port,
-					Guid.NewGuid())));
+					guid)));
 			var binding = new NetTcpBinding(SecurityMode.None);
 			binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
 			binding.ReliableSession.Enabled = true;
@@ -67,6 +78,8 @@ namespace Nvents.Services.Network
 			host.AddServiceEndpoint(new UdpDiscoveryEndpoint());
 			discoveryBehavior.AnnouncementEndpoints.Add(new UdpAnnouncementEndpoint());
 #else
+			discoverer = new ServiceDiscoverer.ServiceDiscoverer();
+			discoverer.Start(ipAddress.ToString(), port, guid);
 #endif
 
 			host.Description.Behaviors.Add(new ServiceThrottlingBehavior

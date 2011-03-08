@@ -14,7 +14,6 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
-
   <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v3.5' ">
     <DefineConstants>NET35</DefineConstants>
     <TargetFrameworkVersionNumber>3.5</TargetFrameworkVersionNumber>
@@ -22,13 +21,12 @@
   <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">
     <TargetFrameworkVersionNumber>4.0</TargetFrameworkVersionNumber>
   </PropertyGroup>
-
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\$(TargetFrameworkVersion)\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -36,7 +34,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\$(TargetFrameworkVersion)\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -45,10 +43,10 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
-    <Reference Include="System.ServiceModel.Discovery" Condition=" '$(TargetFrameworkVersionNumber)' >= '4.0' " />
+    <Reference Include="System.ServiceModel.Discovery" Condition=" '$(TargetFrameworkVersionNumber)' &gt;= '4.0' " />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" Condition=" '$(TargetFrameworkVersionNumber)' >= '4.0' " />
+    <Reference Include="Microsoft.CSharp" Condition=" '$(TargetFrameworkVersionNumber)' &gt;= '4.0' " />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -74,6 +72,11 @@
     <Compile Include="Services\Network\IEventServiceHost.cs" />
     <Compile Include="Services\Network\MultiEventServiceClient.cs" />
     <Compile Include="Services\Network\EncryptableNetDataContractFormatAttribute.cs" />
+    <Compile Include="Services\Network\ServiceDiscoverer\HostResponse.cs" />
+    <Compile Include="Services\Network\ServiceDiscoverer\Service.cs" />
+    <Compile Include="Services\Network\ServiceDiscoverer\ServiceDiscoverer.cs" />
+    <Compile Include="Services\Network\ServiceDiscoverer\ServiceLocator.cs" />
+    <Compile Include="Services\Network\ServiceDiscoverer\ServicePublisher.cs" />
     <Compile Include="Services\ServiceBase.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

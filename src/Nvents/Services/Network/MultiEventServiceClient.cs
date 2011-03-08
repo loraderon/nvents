@@ -108,7 +108,15 @@ namespace Nvents.Services.Network
 				return discoveryResponse.Endpoints.Select(x => x.Address);
 			}
 #else
-			return new EndpointAddress[0];
+			var services = ServiceDiscoverer.ServiceDiscoverer.FindServices(TimeSpan.FromMilliseconds(500));
+			if (services.Length == 0)
+				services = ServiceDiscoverer.ServiceDiscoverer.FindServices(TimeSpan.FromMilliseconds(500));
+			return services
+				.Select(x => new EndpointAddress(
+					string.Format("net.tcp://{0}:{1}/Nvents.Services.Network/{2}/EventService",
+					x.IPAddress,
+					x.Port,
+					x.Guid)));
 #endif
 		}
 
