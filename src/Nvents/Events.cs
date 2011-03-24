@@ -51,10 +51,12 @@ namespace Nvents
 		/// </summary>
 		/// <typeparam name="TEvent">The event type for the handler.</typeparam>
 		/// <param name="handler">The event handler.</param>
-		public static void RegisterHandler<TEvent>(IHandler<TEvent> handler) where TEvent : class, IEvent
+		/// <param name="filter">Optional filter action.</param>
+		public static void RegisterHandler<TEvent>(IHandler<TEvent> handler, Func<TEvent, bool> filter = null) where TEvent : class, IEvent
 		{
 			Subscribe<TEvent>(
-				e => handler.Handle(e));
+				e => handler.Handle(e), 
+				filter);
 		}
 
 		/// <summary>
