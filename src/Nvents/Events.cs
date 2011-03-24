@@ -8,6 +8,10 @@ namespace Nvents
 	public static class Events
 	{
 		static IService service;
+		static System.Reflection.MethodInfo registerHandler = 
+			typeof(Events).GetMethods()
+			.Where(x => x.Name == "RegisterHandler" && x.IsGenericMethod)
+			.Single();
 
 		/// <summary>
 		/// Publishes an event to all subscribers of type TEvent.
@@ -59,13 +63,12 @@ namespace Nvents
 		/// <param name="handler">The event handler.</param>
 		public static void RegisterHandler(object handler)
 		{
-			var eventType = HandlerUtility.GetHandlerEventType(handler);
-
-			var method = typeof(Events).GetMethods()
-				.Where(x => x.Name == "RegisterHandler" && x.IsGenericMethod)
-				.Single();
-			method = method.MakeGenericMethod(new Type[] { eventType });
-			method.Invoke(null, new object[] { handler });
+			foreach (var eventType in HandlerUtility.GetHandlerEventTypes(handler))
+			{
+				registerHandler
+					.MakeGenericMethod(new Type[] { eventType })
+					.Invoke(null, new object[] { handler });
+			}
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]

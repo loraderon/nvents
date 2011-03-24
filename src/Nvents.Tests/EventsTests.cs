@@ -144,6 +144,26 @@ namespace Nvents.Tests
 		}
 
 		[Fact]
+		public void CanRegisterHandlerThatHandlesMultipleEvents()
+		{
+			var handler = new FooBarHandler();
+			Events.RegisterHandler(handler);
+
+			var started = DateTime.Now;
+			Events.Publish(new FooEvent());
+			Events.Publish(new BarEvent());
+
+			var timeout = TimeSpan.FromSeconds(2);
+			while (!handler.FooHandled && !handler.BarHandled && (DateTime.Now - started) < timeout)
+			{
+				Thread.Sleep(100);
+			}
+
+			Assert.True(handler.FooHandled, "FooEvent was not handled");
+			Assert.True(handler.BarHandled, "BarEvent was not handled");
+		}
+
+		[Fact]
 		public void CanFilterEvents()
 		{
 			int raised1 = 0;

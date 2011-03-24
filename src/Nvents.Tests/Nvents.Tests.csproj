@@ -14,7 +14,6 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
-  
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug v4.0|AnyCPU' ">
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <DebugSymbols>true</DebugSymbols>
@@ -49,9 +48,8 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup>
-	<OutputPath>bin\$(Configuration)\</OutputPath>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
-  
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -71,6 +69,7 @@
     <Compile Include="EncryptionTests.cs" />
     <Compile Include="EventsTests.cs" />
     <Compile Include="EventSubscriptionTests.cs" />
+    <Compile Include="FooBarHandler.cs" />
     <Compile Include="FooChildEvent.cs" />
     <Compile Include="FooEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
