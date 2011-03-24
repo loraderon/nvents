@@ -6,6 +6,7 @@ namespace Nvents.Services
 	public abstract class ServiceBase : IService
 	{
 		protected List<EventHandler> handlers = new List<EventHandler>();
+		bool startStateIsPending;
 
 		public void Subscribe<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter = null) where TEvent : class, IEvent
 		{
@@ -25,18 +26,42 @@ namespace Nvents.Services
 
 		protected virtual void OnStop() { }
 
-		public bool IsStarted { get; private set; }
+		private bool isStarted;
+		public bool IsStarted
+		{
+			get
+			{
+				while (startStateIsPending) ;
+				return isStarted;
+			}
+		}
 
 		public void Start()
 		{
-			OnStart();
-			IsStarted = true;
+			startStateIsPending = true;
+			try
+			{
+				OnStart();
+				isStarted = true;
+			}
+			finally
+			{
+				startStateIsPending = false;
+			}			
 		}
 
 		public void Stop()
 		{
-			OnStop();
-			IsStarted = false;
+			startStateIsPending = true;
+			try
+			{
+				OnStop();
+				isStarted = false;
+			}
+			finally
+			{
+				startStateIsPending = false;
+			}	
 		}
 
 		protected bool ShouldEventBeHandled(EventHandler handler, IEvent e)
