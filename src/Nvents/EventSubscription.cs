@@ -9,7 +9,10 @@ namespace Nvents
 
 		public EventSubscription(Func<TEvent, bool> filter = null)
 			: this(Events.Service, filter)
-		{ }
+		{
+			if (!Events.Service.IsStarted)
+				Events.Service.Start();
+		}
 
 		public EventSubscription(ISubscriber subscriber, Func<TEvent, bool> filter = null)
 		{
