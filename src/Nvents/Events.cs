@@ -52,6 +52,16 @@ namespace Nvents
 				e => handler.Handle(e));
 		}
 
+		/// <summary>
+		/// Register an event handler.
+		/// </summary>
+		/// <param name="handler">The event handler.</param>
+		public static void RegisterHandler(object handler)
+		{
+			var wrapper = new WrappingHandler(handler);
+			RegisterHandler(wrapper);
+		}
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static IService Service
 		{

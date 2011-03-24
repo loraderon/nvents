@@ -125,6 +125,25 @@ namespace Nvents.Tests
 		}
 
 		[Fact]
+		public void CanRegisterHandlerWithoutGenerics()
+		{
+			var handler = new DummyHandler();
+			var handlerWithoutGenerics = (object)handler;
+			Events.RegisterHandler(handlerWithoutGenerics);
+
+			var started = DateTime.Now;
+			Events.Publish(new FooEvent());
+
+			var timeout = TimeSpan.FromSeconds(2);
+			while (handler.HandledEvent == null && (DateTime.Now - started) < timeout)
+			{
+				Thread.Sleep(100);
+			}
+
+			Assert.NotNull(handler.HandledEvent);
+		}
+
+		[Fact]
 		public void CanFilterEvents()
 		{
 			int raised1 = 0;
