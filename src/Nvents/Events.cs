@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.ComponentModel;
 using Nvents.Services;
 
@@ -58,8 +59,13 @@ namespace Nvents
 		/// <param name="handler">The event handler.</param>
 		public static void RegisterHandler(object handler)
 		{
-			var wrapper = new WrappingHandler(handler);
-			RegisterHandler(wrapper);
+			var eventType = HandlerUtility.GetHandlerEventType(handler);
+
+			var method = typeof(Events).GetMethods()
+				.Where(x => x.Name == "RegisterHandler" && x.IsGenericMethod)
+				.Single();
+			method = method.MakeGenericMethod(new Type[] { eventType });
+			method.Invoke(null, new object[] { handler });
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
