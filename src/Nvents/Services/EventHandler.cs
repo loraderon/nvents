@@ -16,6 +16,18 @@ namespace Nvents.Services
 			EventType = typeof(TEvent);
 		}
 
+		public void SetHandler<TEvent>(IHandler<TEvent> handler, Func<TEvent, bool> filter) where TEvent : class, IEvent
+		{
+			Action = e =>
+			{
+				var @event = e as TEvent;
+				if (filter != null && !filter(@event))
+					return;
+				handler.Handle(@event);
+			};
+			EventType = typeof(IHandler<TEvent>);
+		}
+
 		public Type EventType { get; private set; }
 		public Action<IEvent> Action { get; private set; }
 	}

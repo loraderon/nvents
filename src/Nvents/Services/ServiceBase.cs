@@ -34,15 +34,12 @@ namespace Nvents.Services
 
 		public void RegisterHandler<TEvent>(IHandler<TEvent> handler, Func<TEvent, bool> filter = null) where TEvent : class, IEvent
 		{
-			Subscribe<TEvent>(
-				e => handler.Handle(e),
-				filter);
+			DetermineAutoStart();
+			var internalHandler = new EventHandler();
+			internalHandler.SetHandler(handler, filter);
+			handlers.Add(internalHandler);
 		}
 
-		/// <summary>
-		/// Register an event handler.
-		/// </summary>
-		/// <param name="handler">The event handler.</param>
 		public void RegisterHandler(object handler)
 		{
 			foreach (var eventType in HandlerUtility.GetHandlerEventTypes(handler))
@@ -104,9 +101,15 @@ namespace Nvents.Services
 		protected bool ShouldEventBeHandled(EventHandler handler, IEvent e)
 		{
 			var eventType = e.GetType();
-			return handler.EventType == eventType
-				|| eventType.IsSubclassOf(handler.EventType)
-				|| eventType.GetInterface(handler.EventType.Name) == handler.EventType;
+			var handlerEventType = handler.EventType;
+			if (handlerEventType.Name == typeof(IHandler<>).Name)
+			{
+				handlerEventType = handlerEventType.GetGenericArguments().First();
+			}
+
+			return handlerEventType == eventType
+				|| eventType.IsSubclassOf(handlerEventType)
+				|| eventType.GetInterface(handlerEventType.Name) == handlerEventType;
 		}
 
 		private void DetermineAutoStart()

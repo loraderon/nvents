@@ -308,6 +308,25 @@ namespace Nvents.Tests
 			Assert.True(raised, "FooEvent was not raised witin the given timeout " + timeout);
 		}
 
+		[Fact]
+		public void ShouldGetEventsToHandlerAfterUnsubscribeAction()
+		{
+			var handler = new DummyHandler();
+			Events.RegisterHandler(handler);
+			Events.Unsubscribe<FooEvent>();
+
+			var started = DateTime.Now;
+			Events.Publish(new FooEvent());
+
+			var timeout = TimeSpan.FromSeconds(2);
+			while (handler.HandledEvent == null && (DateTime.Now - started) < timeout)
+			{
+				Thread.Sleep(100);
+			}
+
+			Assert.NotNull(handler.HandledEvent);
+		}
+
 		public EventsTests()
 		{
 			// reset configuration for each test
