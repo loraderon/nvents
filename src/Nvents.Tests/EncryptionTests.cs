@@ -10,7 +10,7 @@ namespace Nvents.Tests
 		[Fact]
 		public void UnencryptedSerivceShouldNotGetEncryptedEvents()
 		{
-			var encrypted = new AutoNetworkService("encryption-key");
+			var encrypted = new AutoNetworkService(encryptionKey: "encryption-key");
 			encrypted.Start();
 			var unecrypted = new AutoNetworkService();
 			unecrypted.Start();

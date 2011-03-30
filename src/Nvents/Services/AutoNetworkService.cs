@@ -6,8 +6,8 @@ namespace Nvents.Services
 {
 	public class AutoNetworkService : NetworkService
 	{
-		public AutoNetworkService(string encryptionKey = null)
-			: base(GetIpAddress(), GetFreeTcpPort(), encryptionKey)
+		public AutoNetworkService(bool autoStart = true, string encryptionKey = null)
+			: base(GetIpAddress(), GetFreeTcpPort(), autoStart, encryptionKey)
 		{ }
 
 		private static int GetFreeTcpPort()

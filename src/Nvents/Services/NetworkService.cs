@@ -12,7 +12,8 @@ namespace Nvents.Services
 		MultiEventServiceClient client;
 		string encryptionKey;
 
-		public NetworkService(IPAddress ipAddress, int port, string encryptionKey = null)
+		public NetworkService(IPAddress ipAddress, int port, bool autoStart = true, string encryptionKey = null)
+			: base(autoStart)
 		{
 			this.encryptionKey = encryptionKey;
 			server = new EventService();

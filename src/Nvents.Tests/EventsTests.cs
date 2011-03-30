@@ -33,7 +33,6 @@ namespace Nvents.Tests
 
 			Events.Publish(new FooEvent());
 
-			Assert.True(service.StartWasCalled, "Dummy service did not receive a start command.");
 			Assert.True(service.PublishWasCalled, "Dummy service did not receive a publish command.");
 		}
 
@@ -192,7 +191,7 @@ namespace Nvents.Tests
 		[Fact]
 		public void CanPublishEncryptedEvents()
 		{
-			Events.Service = new Nvents.Services.AutoNetworkService("encryption-key");
+			Events.Service = new Nvents.Services.AutoNetworkService(encryptionKey: "encryption-key");
 			var raised = false;
 			Events.Subscribe<FooEvent>(
 				e => raised = true);

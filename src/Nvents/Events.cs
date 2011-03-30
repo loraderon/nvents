@@ -20,8 +20,7 @@ namespace Nvents
 		/// <param name="event">The event to publish.</param>
 		public static void Publish<TEvent>(TEvent @event) where TEvent : class, IEvent
 		{
-			EnsureService();
-			service.Publish(@event);
+			Service.Publish(@event);
 		}
 
 		/// <summary>
@@ -32,8 +31,7 @@ namespace Nvents
 		/// <param name="filter">Optional filter action.</param>
 		public static void Subscribe<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter = null) where TEvent : class, IEvent
 		{
-			EnsureService();
-			service.Subscribe(action, filter);
+			Service.Subscribe(action, filter);
 		}
 
 		/// <summary>
@@ -42,8 +40,7 @@ namespace Nvents
 		/// <typeparam name="TEvent">The event type to unsubscribe for.</typeparam>
 		public static void Unsubscribe<TEvent>() where TEvent : class, IEvent
 		{
-			EnsureService();
-			service.Unsubscribe<TEvent>();
+			Service.Unsubscribe<TEvent>();
 		}
 
 		/// <summary>
@@ -100,13 +97,6 @@ namespace Nvents
 		public new static bool ReferenceEquals(object objA, object objB)
 		{
 			return object.ReferenceEquals(objA, objB);
-		}
-
-		private static void EnsureService()
-		{
-			if (Service.IsStarted)
-				return;
-			Service.Start();
 		}
 	}
 }

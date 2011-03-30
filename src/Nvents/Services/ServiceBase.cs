@@ -7,9 +7,16 @@ namespace Nvents.Services
 	{
 		protected List<EventHandler> handlers = new List<EventHandler>();
 		bool startStateIsPending;
+		bool autoStart;
+
+		public ServiceBase(bool autoStart = true)
+		{
+			this.autoStart = autoStart;
+		}
 
 		public void Subscribe<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter = null) where TEvent : class, IEvent
 		{
+			DetermineAutoStart();
 			var handler = new EventHandler();
 			handler.SetHandler(action, filter);
 			handlers.Add(handler);
@@ -20,7 +27,11 @@ namespace Nvents.Services
 			handlers.RemoveAll(x => x.EventType == typeof(TEvent));
 		}
 
-		public abstract void Publish<TEvent>(TEvent e) where TEvent : class, IEvent;
+		public virtual void Publish<TEvent>(TEvent e) where TEvent : class, IEvent
+		{
+			DetermineAutoStart();
+			Publish(e);
+		}
 
 		protected virtual void OnStart() { }
 
@@ -70,6 +81,15 @@ namespace Nvents.Services
 			return handler.EventType == eventType
 				|| eventType.IsSubclassOf(handler.EventType)
 				|| eventType.GetInterface(handler.EventType.Name) == handler.EventType;
+		}
+
+		private void DetermineAutoStart()
+		{
+			if (!autoStart)
+				return;
+			if (IsStarted)
+				return;
+			Start();
 		}
 	}
 }
