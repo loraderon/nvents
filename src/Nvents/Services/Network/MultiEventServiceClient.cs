@@ -132,7 +132,14 @@ namespace Nvents.Services.Network
 			locker.ExitWriteLock();
 			var disposable = factory as IDisposable;
 			if (disposable != null)
-				disposable.Dispose();
+			{
+				try
+				{
+					disposable.Dispose();
+				}
+				catch (CommunicationObjectFaultedException)
+				{ }
+			}
 		}
 	}
 }
