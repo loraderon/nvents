@@ -66,7 +66,7 @@ namespace Nvents
 			{
 				registerHandler
 					.MakeGenericMethod(new Type[] { eventType })
-					.Invoke(null, new object[] { handler });
+					.Invoke(null, new object[] { handler, null });
 			}
 		}
 
