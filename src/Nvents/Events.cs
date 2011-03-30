@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.ComponentModel;
 using Nvents.Services;
 
@@ -8,10 +7,6 @@ namespace Nvents
 	public static class Events
 	{
 		static IService service;
-		static System.Reflection.MethodInfo registerHandler = 
-			typeof(Events).GetMethods()
-			.Where(x => x.Name == "RegisterHandler" && x.IsGenericMethod)
-			.Single();
 
 		/// <summary>
 		/// Publishes an event to all subscribers of type TEvent.
@@ -51,9 +46,7 @@ namespace Nvents
 		/// <param name="filter">Optional filter action.</param>
 		public static void RegisterHandler<TEvent>(IHandler<TEvent> handler, Func<TEvent, bool> filter = null) where TEvent : class, IEvent
 		{
-			Subscribe<TEvent>(
-				e => handler.Handle(e), 
-				filter);
+			Service.RegisterHandler<TEvent>(handler, filter);
 		}
 
 		/// <summary>
@@ -62,12 +55,7 @@ namespace Nvents
 		/// <param name="handler">The event handler.</param>
 		public static void RegisterHandler(object handler)
 		{
-			foreach (var eventType in HandlerUtility.GetHandlerEventTypes(handler))
-			{
-				registerHandler
-					.MakeGenericMethod(new Type[] { eventType })
-					.Invoke(null, new object[] { handler, null });
-			}
+			Service.RegisterHandler(handler);
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Nvents.Services
@@ -8,6 +9,10 @@ namespace Nvents.Services
 		protected List<EventHandler> handlers = new List<EventHandler>();
 		bool startStateIsPending;
 		bool autoStart;
+		System.Reflection.MethodInfo registerHandler =
+			typeof(Events).GetMethods()
+			.Where(x => x.Name == "RegisterHandler" && x.IsGenericMethod)
+			.Single();
 
 		public ServiceBase(bool autoStart = true)
 		{
@@ -25,6 +30,27 @@ namespace Nvents.Services
 		public void Unsubscribe<TEvent>() where TEvent : class, IEvent
 		{
 			handlers.RemoveAll(x => x.EventType == typeof(TEvent));
+		}
+
+		public void RegisterHandler<TEvent>(IHandler<TEvent> handler, Func<TEvent, bool> filter = null) where TEvent : class, IEvent
+		{
+			Subscribe<TEvent>(
+				e => handler.Handle(e),
+				filter);
+		}
+
+		/// <summary>
+		/// Register an event handler.
+		/// </summary>
+		/// <param name="handler">The event handler.</param>
+		public void RegisterHandler(object handler)
+		{
+			foreach (var eventType in HandlerUtility.GetHandlerEventTypes(handler))
+			{
+				registerHandler
+					.MakeGenericMethod(new Type[] { eventType })
+					.Invoke(null, new object[] { handler, null });
+			}
 		}
 
 		public virtual void Publish<TEvent>(TEvent e) where TEvent : class, IEvent
