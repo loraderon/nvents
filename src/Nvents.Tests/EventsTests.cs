@@ -285,6 +285,29 @@ namespace Nvents.Tests
 			Assert.Equal(1, fooChilds);
 		}
 
+		[Fact]
+		public void CanDelayStart()
+		{
+			var service = new Services.AutoNetworkService(autoStart: false);
+			Events.Service = service;
+			bool raised = false;
+
+			Events.Subscribe<FooEvent>(
+				e => raised = true);
+			service.Start();
+
+			var started = DateTime.Now;
+			Events.Publish(new FooEvent());
+
+			var timeout = TimeSpan.FromSeconds(3);
+			while (!raised && (DateTime.Now - started) < timeout)
+			{
+				Thread.Sleep(100);
+			}
+
+			Assert.True(raised, "FooEvent was not raised witin the given timeout " + timeout);
+		}
+
 		public EventsTests()
 		{
 			// reset configuration for each test
