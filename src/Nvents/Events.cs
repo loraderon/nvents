@@ -58,6 +58,25 @@ namespace Nvents
 			Service.RegisterHandler(handler);
 		}
 
+		/// <summary>
+		/// Unregisters an event handler
+		/// </summary>
+		/// <typeparam name="TEvent">The event type for tha handler</typeparam>
+		/// <param name="handler">The event handler</param>
+		public static void UnregisterHandler<TEvent>(IHandler<TEvent> handler) where TEvent : class, IEvent
+		{
+			Service.UnregisterHandler<TEvent>(handler);
+		}
+
+		/// <summary>
+		/// Unregisters an event handler
+		/// </summary>
+		/// <param name="handler">The event handler</param>
+		public static void UnregisterHandler(object handler)
+		{
+			Service.UnregisterHandler(handler);
+		}
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static IService Service
 		{

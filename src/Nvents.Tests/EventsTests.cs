@@ -327,6 +327,26 @@ namespace Nvents.Tests
 			Assert.NotNull(handler.HandledEvent);
 		}
 
+		[Fact]
+		public void CanUnregisterHandler()
+		{
+			var handler = new DummyHandler();
+			Events.RegisterHandler(handler);
+
+			Events.UnregisterHandler(handler);
+
+			var started = DateTime.Now;
+			Events.Publish(new FooEvent());
+
+			var timeout = TimeSpan.FromSeconds(2);
+			while ((DateTime.Now - started) < timeout)
+			{
+				Thread.Sleep(100);
+			}
+
+			Assert.Null(handler.HandledEvent);
+		}
+
 		public EventsTests()
 		{
 			// reset configuration for each test

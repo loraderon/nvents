@@ -9,14 +9,21 @@ namespace Nvents.Services
 		protected List<EventHandler> handlers = new List<EventHandler>();
 		bool startStateIsPending;
 		bool autoStart;
-		System.Reflection.MethodInfo registerHandler =
-			typeof(Events).GetMethods()
-			.Where(x => x.Name == "RegisterHandler" && x.IsGenericMethod)
-			.Single();
+		System.Reflection.MethodInfo registerHandler;
+		System.Reflection.MethodInfo unregisterHandler;
 
 		public ServiceBase(bool autoStart = true)
 		{
 			this.autoStart = autoStart;
+
+			registerHandler =
+				GetType().GetMethods()
+				.Where(x => x.Name == "RegisterHandler" && x.IsGenericMethod)
+				.Single();
+			unregisterHandler =
+				GetType().GetMethods()
+				.Where(x => x.Name == "UnregisterHandler" && x.IsGenericMethod)
+				.Single();
 		}
 
 		public void Subscribe<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter = null) where TEvent : class, IEvent
@@ -46,7 +53,22 @@ namespace Nvents.Services
 			{
 				registerHandler
 					.MakeGenericMethod(new Type[] { eventType })
-					.Invoke(null, new object[] { handler, null });
+					.Invoke(this, new object[] { handler, null });
+			}
+		}
+
+		public void UnregisterHandler<TEvent>(IHandler<TEvent> handler) where TEvent : class, IEvent
+		{
+			handlers.RemoveAll(x => x.EventType == handler.GetType());
+		}
+
+		public void UnregisterHandler(object handler)
+		{
+			foreach (var eventType in HandlerUtility.GetHandlerEventTypes(handler))
+			{
+				unregisterHandler
+					.MakeGenericMethod(new Type[] { eventType })
+					.Invoke(this, new object[] { handler });
 			}
 		}
 
@@ -81,7 +103,7 @@ namespace Nvents.Services
 			finally
 			{
 				startStateIsPending = false;
-			}			
+			}
 		}
 
 		public void Stop()
@@ -95,16 +117,25 @@ namespace Nvents.Services
 			finally
 			{
 				startStateIsPending = false;
-			}	
+			}
 		}
 
 		protected bool ShouldEventBeHandled(EventHandler handler, IEvent e)
 		{
 			var eventType = e.GetType();
 			var handlerEventType = handler.EventType;
-			if (handlerEventType.Name == typeof(IHandler<>).Name)
+
+			var handlerInterfaces = handlerEventType
+				.GetInterfaces()
+				.Where(x => x.Name == typeof(IHandler<>).Name);
+
+			if (handlerInterfaces.Count() > 0)
 			{
-				handlerEventType = handlerEventType.GetGenericArguments().First();
+				if(handlerInterfaces
+					.Any(x => x.GetGenericArguments().FirstOrDefault() == eventType))
+				{
+					handlerEventType = eventType;
+				}
 			}
 
 			return handlerEventType == eventType

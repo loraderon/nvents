@@ -25,7 +25,7 @@ namespace Nvents.Services
 					return;
 				handler.Handle(@event);
 			};
-			EventType = typeof(IHandler<TEvent>);
+			EventType = handler.GetType();
 		}
 
 		public Type EventType { get; private set; }
