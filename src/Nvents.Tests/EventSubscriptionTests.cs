@@ -15,7 +15,6 @@ namespace Nvents.Tests
 				raised = true;
 
 			Events.Publish(new FooEvent());
-			System.Threading.Thread.Sleep(100);
 
 			Assert.True(raised);
 		}
@@ -29,7 +28,6 @@ namespace Nvents.Tests
 				raised = true;
 
 			Events.Publish(new FooChildEvent());
-			System.Threading.Thread.Sleep(100);
 
 			Assert.True(raised);
 		}
@@ -43,14 +41,13 @@ namespace Nvents.Tests
 				raised = true;
 
 			Events.Publish(new FooEvent());
-			System.Threading.Thread.Sleep(100);
 
 			Assert.True(raised);
 		}
 
 		public EventSubscriptionTests()
 		{
-			Events.Service = new Services.InProcessService();
+			Events.Service = new DummyService();
 		}
 
 		public class FooEventSubscription : EventSubscription<FooEvent>
