@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace Nvents.Services
 {
-	public class InProcessService : ServiceBase
+	public class InMemoryService : ServiceBase
 	{
 		public override void Publish<TEvent>(TEvent e)
 		{

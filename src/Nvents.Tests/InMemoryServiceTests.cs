@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Nvents.Tests
 {
-	public class InProcessServiceTests
+	public class InMemoryServiceTests
 	{
 		[Fact]
 		public void CanPublishEvent()
@@ -19,9 +19,9 @@ namespace Nvents.Tests
 			Assert.True(raised, "FooEvent was not raised");
 		}
 
-		public InProcessServiceTests()
+		public InMemoryServiceTests()
 		{
-			Events.Service = new InProcessService();
+			Events.Service = new InMemoryService();
 		}
 	}
 }

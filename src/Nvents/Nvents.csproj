@@ -68,7 +68,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\EventHandler.cs" />
     <Compile Include="EventSubscription.cs" />
-    <Compile Include="Services\InProcessService.cs" />
+    <Compile Include="Services\InMemoryService.cs" />
     <Compile Include="Services\IPublisher.cs" />
     <Compile Include="Services\IService.cs" />
     <Compile Include="Services\AutoNetworkService.cs" />
