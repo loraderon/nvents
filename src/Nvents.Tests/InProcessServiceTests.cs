@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using Nvents.Services;
 using Xunit;
 
@@ -14,16 +13,10 @@ namespace Nvents.Tests
 			Events.Subscribe<FooEvent>(
 				e => raised = true);
 
-			var started = DateTime.Now;
-			Events.Publish(new FooEvent());
+			Test.WaitFor(() => raised, TimeSpan.FromSeconds(1), () =>
+				Events.Publish(new FooEvent()));
 
-			var timeout = TimeSpan.FromSeconds(1);
-			while (!raised && (DateTime.Now - started) < timeout)
-			{
-				Thread.Sleep(100);
-			}
-
-			Assert.True(raised, "FooEvent was not raised witin the given timeout " + timeout);
+			Assert.True(raised, "FooEvent was not raised");
 		}
 
 		public InProcessServiceTests()

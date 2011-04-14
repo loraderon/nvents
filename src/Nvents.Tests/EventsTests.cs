@@ -13,16 +13,10 @@ namespace Nvents.Tests
 			Events.Subscribe<FooEvent>(
 				e => raised = true);
 
-			var started = DateTime.Now;
-			Events.Publish(new FooEvent());
+			Test.WaitFor(() => raised, TimeSpan.FromSeconds(3), () =>
+				Events.Publish(new FooEvent()));
 
-			var timeout = TimeSpan.FromSeconds(3);
-			while (!raised && (DateTime.Now - started) < timeout)
-			{
-				Thread.Sleep(100);
-			}
-
-			Assert.True(raised, "FooEvent was not raised witin the given timeout " + timeout);
+			Assert.True(raised, "FooEvent was not raised");
 		}
 
 		[Fact]
@@ -39,14 +33,8 @@ namespace Nvents.Tests
 			Events.Subscribe<FooEvent>(
 				e => raised2 = true);
 
-			var started = DateTime.Now;
-			Events.Publish(new FooEvent());
-
-			var timeout = TimeSpan.FromSeconds(2);
-			while (!raised1 && !raised2 && (DateTime.Now - started) < timeout)
-			{
-				Thread.Sleep(100);
-			}
+			Test.WaitFor(() => raised1 && raised2, TimeSpan.FromSeconds(2), () =>
+				Events.Publish(new FooEvent()));
 
 			Assert.True(raised1, "First subscription was not raised.");
 			Assert.True(raised2, "Second subscription was not raised.");
@@ -61,19 +49,15 @@ namespace Nvents.Tests
 			Events.Subscribe<FooEvent>(
 				e => raised++);
 
-			var started = DateTime.Now;
-			for (int i = 0; i < events; i++)
+			Test.WaitFor(() => raised == events, TimeSpan.FromSeconds(15), () =>
 			{
-				ThreadPool.QueueUserWorkItem(_ =>
-					Events.Publish(new FooEvent()));
-			}
-
-			var timeout = TimeSpan.FromSeconds(15);
-			while (raised != events && (DateTime.Now - started) < timeout)
-			{
-				Thread.Sleep(100);
-			}
-
+				for (int i = 0; i < events; i++)
+				{
+					ThreadPool.QueueUserWorkItem(_ =>
+						Events.Publish(new FooEvent()));
+				}
+			});
+			 
 			Assert.Equal(events, raised);
 		}
 	}
