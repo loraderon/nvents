@@ -127,6 +127,16 @@ namespace Nvents.Tests
 			Assert.Null(handler.HandledEvent);
 		}
 
+		[Fact]
+		public void CanDelayStart()
+		{
+			Events.Service = new Services.AutoNetworkService(autoStart: false);
+
+			Assert.Throws<NotSupportedException>(() => 
+				Events.Publish(new FooEvent()));
+			Assert.False(Events.Service.IsStarted);
+		}
+
 		DummyService service;
 
 		public ServiceBaseTest()

@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Nvents.Tests
 {
-	public class EventsTests : IDisposable
+	public class EventsTests
 	{
 		[Fact]
 		public void CanPublishEventsWithoutSetup()
@@ -17,27 +17,6 @@ namespace Nvents.Tests
 			Events.Publish(new FooEvent());
 
 			var timeout = TimeSpan.FromSeconds(3);
-			while (!raised && (DateTime.Now - started) < timeout)
-			{
-				Thread.Sleep(100);
-			}
-
-			Assert.True(raised, "FooEvent was not raised witin the given timeout " + timeout);
-		}
-
-		[Fact]
-		public void CanUseInProcessService()
-		{
-			Events.Service = new Nvents.Services.InProcessService();
-
-			var raised = false;
-			Events.Subscribe<FooEvent>(
-				e => raised = true);
-
-			var started = DateTime.Now;
-			Events.Publish(new FooEvent());
-
-			var timeout = TimeSpan.FromSeconds(1);
 			while (!raised && (DateTime.Now - started) < timeout)
 			{
 				Thread.Sleep(100);
@@ -96,40 +75,6 @@ namespace Nvents.Tests
 			}
 
 			Assert.Equal(events, raised);
-		}
-
-		[Fact]
-		public void CanDelayStart()
-		{
-			var service = new Services.AutoNetworkService(autoStart: false);
-			Events.Service = service;
-			bool raised = false;
-
-			Events.Subscribe<FooEvent>(
-				e => raised = true);
-			service.Start();
-
-			var started = DateTime.Now;
-			Events.Publish(new FooEvent());
-
-			var timeout = TimeSpan.FromSeconds(3);
-			while (!raised && (DateTime.Now - started) < timeout)
-			{
-				Thread.Sleep(100);
-			}
-
-			Assert.True(raised, "FooEvent was not raised witin the given timeout " + timeout);
-		}
-
-		public EventsTests()
-		{
-			// reset configuration for each test
-			Events.Service = null;
-		}
-
-		public void Dispose()
-		{
-			Events.Service.Stop();
 		}
 	}
 }

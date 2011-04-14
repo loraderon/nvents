@@ -72,6 +72,7 @@
     <Compile Include="FooBarHandler.cs" />
     <Compile Include="FooChildEvent.cs" />
     <Compile Include="FooEvent.cs" />
+    <Compile Include="InProcessServiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceBaseTest.cs" />
   </ItemGroup>
