@@ -69,6 +69,8 @@
     <Compile Include="Services\EventHandler.cs" />
     <Compile Include="EventSubscription.cs" />
     <Compile Include="Services\InMemoryService.cs" />
+    <Compile Include="Services\Network\NamedPipesClient.cs" />
+    <Compile Include="Services\NamedPipesService.cs" />
     <Compile Include="Services\IPublisher.cs" />
     <Compile Include="Services\IService.cs" />
     <Compile Include="Services\AutoNetworkService.cs" />
@@ -81,6 +83,7 @@
     <Compile Include="Services\Network\EventServiceHost.cs" />
     <Compile Include="Services\Network\IEventService.cs" />
     <Compile Include="Services\Network\IEventServiceHost.cs" />
+    <Compile Include="Services\Network\NamedPipesEventServiceHost.cs" />
     <Compile Include="Services\Network\MultiEventServiceClient.cs" />
     <Compile Include="Services\Network\EncryptableNetDataContractFormatAttribute.cs" />
     <Compile Include="Services\Network\ServiceDiscoverer\HostResponse.cs" />
