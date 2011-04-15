@@ -15,9 +15,7 @@ namespace Nvents.Services
 
 		public NamedPipesService(bool autoStart = true, string encryptionKey = null)
 			: this("nvents", autoStart, encryptionKey)
-		{
-			System.Diagnostics.Debugger.Break();
-		}
+		{ }
 		 
 		protected override WcfEventServiceClientBase CreateClient(string encryptionKey)
 		{
