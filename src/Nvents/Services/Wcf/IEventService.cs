@@ -1,7 +1,7 @@
 using System;
 using System.ServiceModel;
 
-namespace Nvents.Services.Network
+namespace Nvents.Services.Wcf
 {
 	[ServiceContract(Namespace = "http://Nvents.Services.Network")]
 	public interface IEventService

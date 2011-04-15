@@ -7,7 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace Nvents.Services.Network.ServiceDiscoverer
+namespace Nvents.Services.Wcf.Discovery
 {
 	public static class ServiceLocator
 	{

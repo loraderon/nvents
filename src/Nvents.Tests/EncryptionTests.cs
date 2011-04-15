@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml;
-using Nvents.Services.Network;
+using Nvents.Services.Wcf;
 using Xunit;
 
 namespace Nvents.Tests

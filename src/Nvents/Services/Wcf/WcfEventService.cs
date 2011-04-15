@@ -2,12 +2,12 @@ using System;
 using System.ServiceModel;
 using System.Threading;
 
-namespace Nvents.Services.Network
+namespace Nvents.Services.Wcf
 {
 	[ServiceBehavior(
 		InstanceContextMode = InstanceContextMode.Single,
 		ConcurrencyMode = ConcurrencyMode.Multiple)]
-	public class EventService : IEventService
+	public class WcfEventService : IEventService
 	{
 		public event EventHandler<EventPublishedEventArgs> EventPublished;
 

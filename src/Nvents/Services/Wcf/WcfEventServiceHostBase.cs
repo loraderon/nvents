@@ -1,33 +1,31 @@
 using System;
 using System.ServiceModel;
+using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 #if !NET35
 using System.ServiceModel.Discovery;
 #endif
 
-namespace Nvents.Services.Network
+namespace Nvents.Services.Wcf
 {
-	public class NamedPipesEventServiceHost : IEventServiceHost
+
+	public abstract class WcfEventServiceHostBase : IEventServiceHost
 	{
 		ServiceHost host;
-		string pipe;
 		string encryptionKey;
 #if NET35
-		ServiceDiscoverer.ServiceDiscoverer discoverer;
+		Discovery.ServiceDiscoverer discoverer;
 #endif
 
-		public NamedPipesEventServiceHost(string pipe, string encryptionKey)
+		public WcfEventServiceHostBase(string encryptionKey)
 		{
-			this.pipe = pipe;
 			this.encryptionKey = encryptionKey;
 		}
 
-		public void Start(IEventService instance)
+		public virtual void Start(IEventService instance)
 		{
 			if (host != null)
 				throw new NotSupportedException("Service has already started.");
-			if (pipe == null)
-				throw new ArgumentNullException("pipe");
 			CreateServiceHost(instance);
 			host.Open();
 		}
@@ -39,7 +37,7 @@ namespace Nvents.Services.Network
 			if (host.State == CommunicationState.Opened)
 				host.Close();
 			host = null;
-
+			
 #if NET35
 			if (discoverer == null)
 				return;
@@ -54,15 +52,10 @@ namespace Nvents.Services.Network
 		{
 			var guid = Guid.NewGuid();
 			host = new ServiceHost(instance,
-				new Uri(string.Format(
-					"net.pipe://localhost/Nvents.Services.Network/{0}/{1}",
-					pipe,
-					guid)));
-			var binding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None);
-
+				GetUri(guid));
 			host.AddServiceEndpoint(
 				typeof(IEventService),
-				binding,
+				GetBinding(),
 				"EventService");
 #if !NET35
 			var discoveryBehavior = new ServiceDiscoveryBehavior();
@@ -70,8 +63,8 @@ namespace Nvents.Services.Network
 			host.AddServiceEndpoint(new UdpDiscoveryEndpoint());
 			discoveryBehavior.AnnouncementEndpoints.Add(new UdpAnnouncementEndpoint());
 #else
-			discoverer = new ServiceDiscoverer.ServiceDiscoverer();
-			discoverer.Start(null, 0, guid);
+			discoverer = new Discovery.ServiceDiscoverer();
+			StartDiscoverer(discoverer, guid);
 #endif
 
 			host.Description.Behaviors.Add(new ServiceThrottlingBehavior
@@ -84,5 +77,11 @@ namespace Nvents.Services.Network
 			host.Opened += (s, e) => IsStarted = true;
 			host.Closed += (s, e) => IsStarted = false;
 		}
+		
+		abstract protected Uri GetUri(Guid guid);
+		abstract protected Binding GetBinding();
+#if NET35
+		abstract protected void StartDiscoverer(Discovery.ServiceDiscoverer discoverer, Guid guid);
+#endif
 	}
 }

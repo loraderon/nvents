@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using System.Net;
 
-namespace Nvents.Services.Network.ServiceDiscoverer
+namespace Nvents.Services.Wcf.Discovery
 {
 
 	public struct HostResponse

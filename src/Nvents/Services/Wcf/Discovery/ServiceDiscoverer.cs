@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 
-namespace Nvents.Services.Network.ServiceDiscoverer
+namespace Nvents.Services.Wcf.Discovery
 {
 	public class ServiceDiscoverer
 	{

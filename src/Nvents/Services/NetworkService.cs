@@ -1,63 +1,29 @@
 using System;
-using System.Linq;
 using System.Net;
-using Nvents.Services.Network;
+using Nvents.Services.Wcf;
 
 namespace Nvents.Services
 {
-	public class NetworkService : ServiceBase
+	public class NetworkService : WcfServiceBase
 	{
-		EventService server;
-		IEventServiceHost host;
-		MultiEventServiceClient client;
-		string encryptionKey;
+		IPAddress ipAddress;
+		int port;
 
 		public NetworkService(IPAddress ipAddress, int port, bool autoStart = true, string encryptionKey = null)
-			: base(autoStart)
+			: base(autoStart, encryptionKey)
 		{
-			this.encryptionKey = encryptionKey;
-			server = new EventService();
-			CreateClient();
-			host = new EventServiceHost(ipAddress, port, encryptionKey);
-
-			server.EventPublished += server_EventPublished;
+			this.ipAddress = ipAddress;
+			this.port = port;
 		}
 
-		private void CreateClient()
+		protected override WcfEventServiceClientBase CreateClient(string encryptionKey)
 		{
-			client = new MultiEventServiceClient(encryptionKey);
+			return new TcpEventServiceClient(encryptionKey);
 		}
 
-		void server_EventPublished(object sender, EventPublishedEventArgs e)
+		protected override IEventServiceHost CreateEventServiceHost(string encryptionKey)
 		{
-			foreach (var handler in handlers
-				.Where(x => ShouldEventBeHandled(x, e.Event)))
-			{
-				try
-				{
-					handler.Action(e.Event);
-				}
-				catch { }
-			}
-		}
-
-		public override void Publish<TEvent>(TEvent e)
-		{
-			if (!IsStarted)
-				throw new NotSupportedException("Service is not started.");
-			client.Publish(e);
-		}
-
-		protected override void OnStart()
-		{
-			host.Start(server);
-			CreateClient();
-		}
-
-		protected override void OnStop()
-		{
-			client.Dispose();
-			host.Stop();
+			return new TcpEventEventServiceHost(encryptionKey, ipAddress, port);
 		}
 	}
 }

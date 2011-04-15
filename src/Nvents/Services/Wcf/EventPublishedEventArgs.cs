@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nvents.Services.Network
+namespace Nvents.Services.Wcf
 {
 	public class EventPublishedEventArgs : EventArgs
 	{

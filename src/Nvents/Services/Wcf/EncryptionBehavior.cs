@@ -3,7 +3,7 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
 
-namespace Nvents.Services.Network
+namespace Nvents.Services.Wcf
 {
 	public class EncryptionBehavior : IOperationBehavior
 	{

@@ -1,7 +1,7 @@
 #if NET35
 using System;
 
-namespace Nvents.Services.Network.ServiceDiscoverer
+namespace Nvents.Services.Wcf.Discovery
 {
 	[Serializable]
 	public class Service

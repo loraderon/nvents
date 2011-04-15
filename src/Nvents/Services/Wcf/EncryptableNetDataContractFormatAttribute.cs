@@ -6,7 +6,7 @@ using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
 using System.Xml;
 
-namespace Nvents.Services.Network
+namespace Nvents.Services.Wcf
 {
 	public class EncryptableNetDataContractFormatAttribute : Attribute, IOperationBehavior
 	{

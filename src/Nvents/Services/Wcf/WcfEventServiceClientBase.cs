@@ -6,26 +6,24 @@ using System.ServiceModel;
 using System.ServiceModel.Discovery;
 #endif
 using System.Threading;
+using System.ServiceModel.Channels;
 
-
-namespace Nvents.Services.Network
+namespace Nvents.Services.Wcf
 {
-	public class NamedPipesClient : IEventService, IDisposable
+	public abstract class WcfEventServiceClientBase : IEventService, IDisposable
 	{
 		ChannelFactory<IEventService> factory;
 		Dictionary<EndpointAddress, IEventService> servers = new Dictionary<EndpointAddress, IEventService>();
 		ReaderWriterLockSlim locker = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 		DateTime lastDiscoveryLookup = DateTime.Now.AddDays(-1);
-		string pipe;
 
-		public NamedPipesClient(string pipe, string encryptionKey)
+		public WcfEventServiceClientBase(string encryptionKey)
 		{
-			this.pipe = pipe;
-			var binding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None);
-
-			factory = new ChannelFactory<IEventService>(binding);
+			factory = new ChannelFactory<IEventService>(GetBinding());
 			factory.Endpoint.Contract.Operations[0].Behaviors.Add(new EncryptionBehavior { EncryptionKey = encryptionKey });
 		}
+
+		abstract protected Binding GetBinding();
 
 		public void Publish(IEvent @event)
 		{
@@ -110,16 +108,16 @@ namespace Nvents.Services.Network
 				return discoveryResponse.Endpoints.Select(x => x.Address);
 			}
 #else
-			var services = ServiceDiscoverer.ServiceDiscoverer.FindServices(TimeSpan.FromMilliseconds(500));
+			var services = Discovery.ServiceDiscoverer.FindServices(TimeSpan.FromMilliseconds(500));
 			if (services.Length == 0)
-				services = ServiceDiscoverer.ServiceDiscoverer.FindServices(TimeSpan.FromMilliseconds(500));
+				services = Discovery.ServiceDiscoverer.FindServices(TimeSpan.FromMilliseconds(500));
 			return services
-				.Select(x => new EndpointAddress(
-					string.Format("net.pipe://localhost/Nvents.Services.Network/{0}/{1}/EventService",
-					pipe,
-					x.Guid)));
+				.Select(x => GetEndpoint(x));
 #endif
 		}
+#if NET35
+		abstract protected EndpointAddress GetEndpoint(Discovery.Service service);
+#endif
 
 		public void Dispose()
 		{
@@ -143,5 +141,4 @@ namespace Nvents.Services.Network
 			}
 		}
 	}
-
 }
