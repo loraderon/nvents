@@ -11,6 +11,7 @@ namespace Chat.Moderator
 	{
 		public override void Load()
 		{
+			// Bind IPublisher to the default service
 			Bind<IPublisher>()
 				.ToConstant(Events.Service);
 
@@ -22,6 +23,7 @@ namespace Chat.Moderator
 			//	//Events.RegisterHandler(handler); //supported in nvents 0.7
 			//}
 
+			// Register the MessageSentHandler from the ioc container
 			Events.RegisterHandler(Kernel.Get<Chat.Moderator.Handlers.MessageSentHandler>());
 		}
 	}

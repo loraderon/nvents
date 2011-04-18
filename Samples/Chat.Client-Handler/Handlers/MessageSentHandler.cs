@@ -5,6 +5,9 @@ using Nvents;
 
 namespace Chat.Client_Handler.Handlers
 {
+	/// <summary>
+	/// Handles MessageSent events
+	/// </summary>
 	public class MessageSentHandler : IHandler<MessageSent>
 	{
 		ListBox list;
@@ -16,6 +19,7 @@ namespace Chat.Client_Handler.Handlers
 
 		public void Handle(MessageSent @event)
 		{
+			// Add message to listbox when MessageSent events are handled
 			list.Dispatcher.Invoke((Action)(() 
 				=> list.Items.Add(@event)));
 		}

@@ -11,11 +11,13 @@ namespace Chat.Moderator.ViewModels
 
 		public ShellViewModel(IPublisher publisher)
 		{
+			// publisher is injected by ninject
 			this.publisher = publisher;
 		}
 
 		public void KickUser(MessageSent message)
 		{
+			// Publish a UserKicked event containing id of the user being kicked
 			publisher.Publish(new UserKicked { UserId = message.Sender.Id });
 		}
 

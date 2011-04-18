@@ -9,6 +9,7 @@ namespace Chat.Client_EventSubscription
 	{
 		private void Button_Click(object sender, RoutedEventArgs e)
 		{
+			// Publish a MessageSent event containing message text and current user
 			Events.Publish(new MessageSent { Message = MessageToSend.Text, Sender = currentUser });
 			MessageToSend.Text = "";
 		}
@@ -17,18 +18,24 @@ namespace Chat.Client_EventSubscription
 		{
 			// Workaround for issue #2 'EventSubscription<TEvent> default constructor does not start the service'
 			// This issue is fixed in nvents 0.7
-			Events.Service.Start(); 
-			
-			
+			Events.Service.Start();
+
+
+			// Create a EventSubscription for the MessageSent event
 			var messageSent = new EventSubscription<MessageSent>();
+			// Register a handler for when Published is raised for MessageSent event
 			messageSent.Published += messageSent_Published;
 
+
+			// Create a EventSubscription for the UserKicked event and filter to only the current user
 			var userKicked = new EventSubscription<UserKicked>(user => user.UserId == currentUser.Id);
+			// Register a handler for when Published is raised for UserKicked event (will only be raised for events that passes the subscription filter)
 			userKicked.Published += userKicked_Published;
 		}
 
 		void userKicked_Published(object sender, EventSubscription<UserKicked>.PublishedEventArgs e)
 		{
+			// Inform that user has been kicked and exit the application when UserKicked event is published
 			ExecuteOnUIThread(() =>
 			{
 				MessageBox.Show("You have been kicked");
@@ -38,6 +45,7 @@ namespace Chat.Client_EventSubscription
 
 		void messageSent_Published(object sender, EventSubscription<MessageSent>.PublishedEventArgs e)
 		{
+			// Add message to listbox when MessageSent events are published
 			ExecuteOnUIThread(() =>
 				Messages.Items.Add(e.Event));
 		}

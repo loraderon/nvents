@@ -5,6 +5,9 @@ using Nvents;
 
 namespace Chat.Client_Handler.Handlers
 {
+	/// <summary>
+	/// Handles UserKicked events
+	/// </summary>
 	public class UserKickedHandler : IHandler<UserKicked>
 	{
 		User currentUser;
@@ -20,6 +23,7 @@ namespace Chat.Client_Handler.Handlers
 			if (currentUser.Id != @event.UserId)
 				return;
 
+			// Inform that user has been kicked and exit the application when UserKicked event is handled
 			Application.Current.Dispatcher.Invoke((Action)(() =>
 			{
 				MessageBox.Show("You have been kicked");

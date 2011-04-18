@@ -9,15 +9,20 @@ namespace Chat.Client_Subscribe
 	{
 		private void Button_Click(object sender, RoutedEventArgs e)
 		{
+			// Publish a MessageSent event containing message text and current user
 			Events.Publish(new MessageSent { Message = MessageToSend.Text, Sender = currentUser });
 			MessageToSend.Text = "";
 		}
 
 		private void SubscribeToEvents()
 		{
+			// Subscribe to MessageSent events using the AddMessage method
 			Events.Subscribe<MessageSent>(e => AddMessage(e));
+
+			// Subscribe to UserKicked event using lambda and filter to only the current user
 			Events.Subscribe<UserKicked>(e =>
 				{
+					// Inform that user has been kicked and exit the application when UserKicked event is published
 					ExecuteOnUIThread(() =>
 					{
 						MessageBox.Show("You have been kicked");
@@ -29,6 +34,7 @@ namespace Chat.Client_Subscribe
 
 		private void AddMessage(MessageSent message)
 		{
+			// Add message to listbox when MessageSent events are published
 			ExecuteOnUIThread(() =>
 				Messages.Items.Add(message));
 		}

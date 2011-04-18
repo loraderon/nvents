@@ -10,15 +10,18 @@ namespace Chat.Client_Handler
 	{
 		private void Button_Click(object sender, RoutedEventArgs e)
 		{
+			// Publish a MessageSent event containing message text and current user
 			Events.Publish(new MessageSent { Message = MessageToSend.Text, Sender = currentUser });
 			MessageToSend.Text = "";
 		}
 
 		private void SubscribeToEvents()
 		{
+			// Creating and registering the MessageSentHandler
 			var messageSentHandler = new MessageSentHandler(Messages);
 			Events.RegisterHandler(messageSentHandler);
 
+			// Creating and registering the UserKickedHandler
 			var userKickedHandler = new UserKickedHandler(currentUser);
 			Events.RegisterHandler(userKickedHandler);
 
