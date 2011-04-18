@@ -5,6 +5,11 @@ namespace Nvents.Services
 {
 	internal static class HandlerUtility
 	{
+		/// <summary>
+		/// Gets the event types that the specified event handler handles
+		/// </summary>
+		/// <param name="handler">The event handler</param>
+		/// <returns>The type of events that are handled</returns>
 		public static Type[] GetHandlerEventTypes(object handler)
 		{
 			var eventTypes =

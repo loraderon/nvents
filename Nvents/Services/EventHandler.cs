@@ -2,6 +2,9 @@ using System;
 
 namespace Nvents.Services
 {
+	/// <summary>
+	/// Internal event handler for storing subscriptions and event handlers
+	/// </summary>
 	public class EventHandler
 	{
 		public void SetHandler<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter) where TEvent : class, IEvent

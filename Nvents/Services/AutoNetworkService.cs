@@ -4,8 +4,16 @@ using System.Net.Sockets;
 
 namespace Nvents.Services
 {
+	/// <summary>
+	/// Network service for publishing/subscribing to events on the local network that automatically listens to the first local network on a available port
+	/// </summary>
 	public class AutoNetworkService : NetworkService
 	{
+		/// <summary>
+		/// Network service for publishing/subscribing to events on the local network that automatically listens to the first local network on a available port
+		/// </summary>
+		/// <param name="autoStart">Determines if the service should automatically start when publishing events</param>
+		/// <param name="encryptionKey">Key for encrypting the events before publishing</param>
 		public AutoNetworkService(bool autoStart = true, string encryptionKey = null)
 			: base(GetIpAddress(), GetFreeTcpPort(), autoStart, encryptionKey)
 		{ }
