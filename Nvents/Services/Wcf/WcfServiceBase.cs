@@ -24,12 +24,12 @@ namespace Nvents.Services.Wcf
 
 		void server_EventPublished(object sender, EventPublishedEventArgs e)
 		{
-			foreach (var handler in handlers
+			foreach (var registration in registrations
 				.Where(x => ShouldEventBeHandled(x, e.Event)))
 			{
 				try
 				{
-					handler.Action(e.Event);
+					registration.Action(e.Event);
 				}
 				catch { }
 			}

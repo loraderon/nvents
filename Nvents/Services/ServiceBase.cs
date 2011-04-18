@@ -9,7 +9,7 @@ namespace Nvents.Services
 	/// </summary>
 	public abstract class ServiceBase : IService
 	{
-		protected List<EventHandler> handlers = new List<EventHandler>();
+		protected List<EventRegistration> registrations = new List<EventRegistration>();
 		bool startStateIsPending;
 		bool autoStart;
 		System.Reflection.MethodInfo registerHandler;
@@ -39,9 +39,9 @@ namespace Nvents.Services
 		public void Subscribe<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter = null) where TEvent : class, IEvent
 		{
 			DetermineAutoStart();
-			var handler = new EventHandler();
-			handler.SetHandler(action, filter);
-			handlers.Add(handler);
+			var registration = new EventRegistration();
+			registration.SetHandler(action, filter);
+			registrations.Add(registration);
 		}
 
 		/// <summary>
@@ -50,7 +50,7 @@ namespace Nvents.Services
 		/// <typeparam name="TEvent">The type of event to unsubscribe</typeparam>
 		public void Unsubscribe<TEvent>() where TEvent : class, IEvent
 		{
-			handlers.RemoveAll(x => x.EventType == typeof(TEvent));
+			registrations.RemoveAll(x => x.EventType == typeof(TEvent));
 		}
 
 		/// <summary>
@@ -61,9 +61,9 @@ namespace Nvents.Services
 		public void RegisterHandler<TEvent>(IHandler<TEvent> handler, Func<TEvent, bool> filter = null) where TEvent : class, IEvent
 		{
 			DetermineAutoStart();
-			var internalHandler = new EventHandler();
-			internalHandler.SetHandler(handler, filter);
-			handlers.Add(internalHandler);
+			var registration = new EventRegistration();
+			registration.SetHandler(handler, filter);
+			registrations.Add(registration);
 		}
 
 		/// <summary>
@@ -89,7 +89,7 @@ namespace Nvents.Services
 		/// <param name="handler">The event handler to unregister</param>
 		public void UnregisterHandler<TEvent>(IHandler<TEvent> handler) where TEvent : class, IEvent
 		{
-			handlers.RemoveAll(x => x.EventType == handler.GetType());
+			registrations.RemoveAll(x => x.EventType == handler.GetType());
 		}
 
 		/// <summary>
@@ -173,30 +173,30 @@ namespace Nvents.Services
 		/// <summary>
 		/// Determines whether a published event should be handled by the specified event handler
 		/// </summary>
-		/// <param name="handler">The internal event handler</param>
+		/// <param name="registration">The internal event registration</param>
 		/// <param name="e">The event that was published</param>
 		/// <returns>True if the event should be handled</returns>
-		protected bool ShouldEventBeHandled(EventHandler handler, IEvent e)
+		protected bool ShouldEventBeHandled(EventRegistration registration, IEvent e)
 		{
 			var eventType = e.GetType();
-			var handlerEventType = handler.EventType;
+			var registrationEventType = registration.EventType;
 
-			var handlerInterfaces = handlerEventType
+			var registrationInterfaces = registrationEventType
 				.GetInterfaces()
 				.Where(x => x.Name == typeof(IHandler<>).Name);
 
-			if (handlerInterfaces.Count() > 0)
+			if (registrationInterfaces.Count() > 0)
 			{
-				if(handlerInterfaces
+				if(registrationInterfaces
 					.Any(x => x.GetGenericArguments().FirstOrDefault() == eventType))
 				{
-					handlerEventType = eventType;
+					registrationEventType = eventType;
 				}
 			}
 
-			return handlerEventType == eventType
-				|| eventType.IsSubclassOf(handlerEventType)
-				|| eventType.GetInterface(handlerEventType.Name) == handlerEventType;
+			return registrationEventType == eventType
+				|| eventType.IsSubclassOf(registrationEventType)
+				|| eventType.GetInterface(registrationEventType.Name) == registrationEventType;
 		}
 
 		private void DetermineAutoStart()

@@ -16,11 +16,11 @@ namespace Nvents.Services
 		/// <param name="e">The event to publish.</param>
 		public override void Publish<TEvent>(TEvent e)
 		{
-			foreach (var handler in handlers
+			foreach (var registration in registrations
 				.Where(x => ShouldEventBeHandled(x, e)))
 			{
 				ThreadPool.QueueUserWorkItem(s =>
-					((EventHandler)s).Action(e), handler);
+					((EventRegistration)s).Action(e), registration);
 			}
 		}
 	}

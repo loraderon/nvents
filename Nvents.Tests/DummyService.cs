@@ -10,10 +10,10 @@ namespace Nvents.Tests
 		public override void Publish<TEvent>(TEvent e)
 		{
 			publishedEvents.Add(e);
-			foreach (var handler in handlers
+			foreach (var registration in registrations
 				.Where(x => ShouldEventBeHandled(x, e)))
 			{
-				handler.Action(e);
+				registration.Action(e);
 			}
 		}
 
