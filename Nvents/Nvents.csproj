@@ -76,7 +76,6 @@
     <Compile Include="Services\NamedPipesService.cs" />
     <Compile Include="Services\IPublisher.cs" />
     <Compile Include="Services\IService.cs" />
-    <Compile Include="Services\AutoNetworkService.cs" />
     <Compile Include="Services\ISubscriber.cs" />
     <Compile Include="Services\NetworkService.cs" />
     <Compile Include="Services\Wcf\EncryptableNetDataContractSerializer.cs" />

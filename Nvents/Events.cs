@@ -83,7 +83,7 @@ namespace Nvents
 			get
 			{
 				if (service == null)
-					service = new AutoNetworkService();
+					service = new NetworkService();
 				return service;
 			}
 			set

@@ -130,7 +130,7 @@ namespace Nvents.Tests
 		[Fact]
 		public void CanDelayStart()
 		{
-			Events.Service = new Services.AutoNetworkService(autoStart: false);
+			Events.Service = new Services.NetworkService(autoStart: false);
 
 			Assert.Throws<NotSupportedException>(() => 
 				Events.Publish(new FooEvent()));
