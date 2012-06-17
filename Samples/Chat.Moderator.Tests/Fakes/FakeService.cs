@@ -19,15 +19,31 @@ namespace Chat.Moderator.Tests.Fakes
 		public void Stop()
 		{ }
 
-		public void Unsubscribe<TEvent>() where TEvent : class, IEvent
+		public void Unsubscribe<TEvent>() where TEvent : class
 		{ }
 
-		public void Subscribe<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter = null) where TEvent : class, IEvent
+		public void Subscribe<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter = null) where TEvent : class
 		{
 			LastEventTypeSubscription = typeof(TEvent);
 		}
 
-		public void Publish<TEvent>(TEvent @event) where TEvent : class, IEvent
+		public void Publish<TEvent>(TEvent @event) where TEvent : class
 		{ }
-	}
+
+        public void UnregisterHandler(object handler)
+        { }
+
+        public void UnregisterHandler<TEvent>(IHandler<TEvent> handler) where TEvent : class
+        { }
+
+        public void RegisterHandler(object handler)
+        {
+            LastEventTypeSubscription = handler.GetType().GetMethod("Handle").GetParameters()[0].ParameterType;
+        }
+
+        public void RegisterHandler<TEvent>(IHandler<TEvent> handler, Func<TEvent, bool> filter = null) where TEvent : class
+        {
+            LastEventTypeSubscription = typeof(TEvent);
+        }
+    }
 }

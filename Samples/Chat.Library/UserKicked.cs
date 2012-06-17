@@ -1,12 +1,11 @@
 ﻿using System;
-using Nvents;
 
 namespace Chat.Library
 {
 	/// <summary>
 	/// Event for when a user is kicked
 	/// </summary>
-	public class UserKicked : IEvent
+	public class UserKicked
 	{
 		/// <summary>
 		/// The id of the user being kicked

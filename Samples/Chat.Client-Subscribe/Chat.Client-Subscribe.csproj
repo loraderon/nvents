@@ -39,8 +39,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="Nvents">
-      <HintPath>..\packages\nvents.0.6\lib\NET40\Nvents.dll</HintPath>
+    <Reference Include="Nvents, Version=0.7.4551.32560, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\nvents.0.7\lib\net40\Nvents.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

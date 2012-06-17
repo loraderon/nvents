@@ -1,12 +1,11 @@
 ﻿using System;
-using Nvents;
 
 namespace Chat.Library
 {
 	/// <summary>
 	/// Event for when a message is sent
 	/// </summary>
-	public class MessageSent : IEvent
+	public class MessageSent
 	{
 		/// <summary>
 		/// The text of the message
