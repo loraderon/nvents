@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <version>0.7</version>
+    <authors>Anders Wåglund</authors>
+    <owners />
+    <licenseUrl>http://creativecommons.org/licenses/MIT/</licenseUrl>
+    <projectUrl>http://nvents.org/</projectUrl>
+    <iconUrl>http://nvents.org/nuget-icon.png</iconUrl>
+    <id>nvents</id>
+    <title />
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>nvents is an open source library for strongly typed publishing/subscribing of events over the network.</description>
+    <releaseNotes>Version 0.7 adds true POCO and inter-process support</releaseNotes>
+    <tags>messaging domain-events WCF publish subscribe nservicebus</tags>
+  </metadata>
+  <files>
+    <file src="Nvents\bin\Release v3.5\Nvents.dll" target="lib\net35\Nvents.dll" />
+    <file src="Nvents\bin\Release v4.0\Nvents.dll" target="lib\net40\Nvents.dll" />
+  </files>
+</package>
