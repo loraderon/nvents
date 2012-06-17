@@ -89,7 +89,7 @@ namespace Nvents.Tests
 			var numberOfFooEvents = 0;
 			var numberOfFooChildEvents = 0;
 
-			Events.Subscribe<IEvent>(e => numberOfEvents++);
+            Events.Subscribe<object>(e => numberOfEvents++);
 			Events.Subscribe<FooEvent>(e => numberOfFooEvents++);
 			Events.Subscribe<FooChildEvent>(e => numberOfFooChildEvents++);
 

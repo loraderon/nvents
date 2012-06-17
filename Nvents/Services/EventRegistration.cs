@@ -7,7 +7,7 @@ namespace Nvents.Services
 	/// </summary>
 	public class EventRegistration
 	{
-		public void SetHandler<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter) where TEvent : class, IEvent
+		public void SetHandler<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter) where TEvent : class
 		{
 			Action = e =>
 			{
@@ -19,7 +19,7 @@ namespace Nvents.Services
 			EventType = typeof(TEvent);
 		}
 
-		public void SetHandler<TEvent>(IHandler<TEvent> handler, Func<TEvent, bool> filter) where TEvent : class, IEvent
+		public void SetHandler<TEvent>(IHandler<TEvent> handler, Func<TEvent, bool> filter) where TEvent : class
 		{
 			Action = e =>
 			{
@@ -32,6 +32,6 @@ namespace Nvents.Services
 		}
 
 		public Type EventType { get; private set; }
-		public Action<IEvent> Action { get; private set; }
+		public Action<object> Action { get; private set; }
 	}
 }

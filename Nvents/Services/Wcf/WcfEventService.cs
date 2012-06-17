@@ -12,7 +12,7 @@ namespace Nvents.Services.Wcf
 		public event EventHandler<EventPublishedEventArgs> EventPublished;
 
 		[EncryptableNetDataContractFormatAttribute]
-		public void Publish(IEvent @event)
+		public void Publish(object @event)
 		{
 			if (EventPublished == null)
 				return;

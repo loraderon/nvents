@@ -21,7 +21,7 @@ namespace Nvents.Services
 				where parameters.Length == 1
 				from p in parameters
 				where p.ParameterType
-					.GetInterface("IEvent") == typeof(IEvent)
+					.IsClass
 				select p.ParameterType;
 
 			if (eventTypes.Count() == 0)

@@ -13,7 +13,7 @@ namespace Nvents
 		/// </summary>
 		/// <typeparam name="TEvent">The event type to publish.</typeparam>
 		/// <param name="event">The event to publish.</param>
-		public static void Publish<TEvent>(TEvent @event) where TEvent : class, IEvent
+		public static void Publish<TEvent>(TEvent @event) where TEvent : class
 		{
 			Service.Publish(@event);
 		}
@@ -24,7 +24,7 @@ namespace Nvents
 		/// <typeparam name="TEvent">The event type to subscribe for.</typeparam>
 		/// <param name="action">Action to perfom when event is published.</param>
 		/// <param name="filter">Optional filter action.</param>
-		public static void Subscribe<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter = null) where TEvent : class, IEvent
+		public static void Subscribe<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter = null) where TEvent : class
 		{
 			Service.Subscribe(action, filter);
 		}
@@ -33,7 +33,7 @@ namespace Nvents
 		/// Unsubscribes from all events of type TEvent.
 		/// </summary>
 		/// <typeparam name="TEvent">The event type to unsubscribe for.</typeparam>
-		public static void Unsubscribe<TEvent>() where TEvent : class, IEvent
+		public static void Unsubscribe<TEvent>() where TEvent : class
 		{
 			Service.Unsubscribe<TEvent>();
 		}
@@ -44,7 +44,7 @@ namespace Nvents
 		/// <typeparam name="TEvent">The event type for the handler.</typeparam>
 		/// <param name="handler">The event handler.</param>
 		/// <param name="filter">Optional filter action.</param>
-		public static void RegisterHandler<TEvent>(IHandler<TEvent> handler, Func<TEvent, bool> filter = null) where TEvent : class, IEvent
+		public static void RegisterHandler<TEvent>(IHandler<TEvent> handler, Func<TEvent, bool> filter = null) where TEvent : class
 		{
 			Service.RegisterHandler<TEvent>(handler, filter);
 		}
@@ -63,7 +63,7 @@ namespace Nvents
 		/// </summary>
 		/// <typeparam name="TEvent">The event type for tha handler</typeparam>
 		/// <param name="handler">The event handler</param>
-		public static void UnregisterHandler<TEvent>(IHandler<TEvent> handler) where TEvent : class, IEvent
+		public static void UnregisterHandler<TEvent>(IHandler<TEvent> handler) where TEvent : class
 		{
 			Service.UnregisterHandler<TEvent>(handler);
 		}

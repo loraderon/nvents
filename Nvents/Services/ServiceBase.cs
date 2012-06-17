@@ -36,7 +36,7 @@ namespace Nvents.Services
 		/// <typeparam name="TEvent">The event type to subscribe for.</typeparam>
 		/// <param name="action">Action to perfom when event is published.</param>
 		/// <param name="filter">Optional filter action.</param>
-		public void Subscribe<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter = null) where TEvent : class, IEvent
+		public void Subscribe<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter = null) where TEvent : class
 		{
 			DetermineAutoStart();
 			var registration = new EventRegistration();
@@ -48,7 +48,7 @@ namespace Nvents.Services
 		/// Unsubscribes all events of the specified type
 		/// </summary>
 		/// <typeparam name="TEvent">The type of event to unsubscribe</typeparam>
-		public void Unsubscribe<TEvent>() where TEvent : class, IEvent
+		public void Unsubscribe<TEvent>() where TEvent : class
 		{
 			registrations.RemoveAll(x => x.EventType == typeof(TEvent));
 		}
@@ -58,7 +58,7 @@ namespace Nvents.Services
 		/// </summary>
 		/// <param name="handler">The event handler.</param>		
 		/// <param name="filter">Optional filter action.</param>
-		public void RegisterHandler<TEvent>(IHandler<TEvent> handler, Func<TEvent, bool> filter = null) where TEvent : class, IEvent
+		public void RegisterHandler<TEvent>(IHandler<TEvent> handler, Func<TEvent, bool> filter = null) where TEvent : class
 		{
 			DetermineAutoStart();
 			var registration = new EventRegistration();
@@ -87,7 +87,7 @@ namespace Nvents.Services
 		/// </summary>
 		/// <typeparam name="TEvent">The event type for the event handler</typeparam>
 		/// <param name="handler">The event handler to unregister</param>
-		public void UnregisterHandler<TEvent>(IHandler<TEvent> handler) where TEvent : class, IEvent
+		public void UnregisterHandler<TEvent>(IHandler<TEvent> handler) where TEvent : class
 		{
 			registrations.RemoveAll(x => x.EventType == handler.GetType());
 		}
@@ -113,7 +113,7 @@ namespace Nvents.Services
 		/// </summary>
 		/// <typeparam name="TEvent">The event type to publish.</typeparam>
 		/// <param name="e">The event to publish.</param>
-		public virtual void Publish<TEvent>(TEvent e) where TEvent : class, IEvent
+		public virtual void Publish<TEvent>(TEvent e) where TEvent : class
 		{
 			DetermineAutoStart();
 			Publish(e);
@@ -176,7 +176,7 @@ namespace Nvents.Services
 		/// <param name="registration">The internal event registration</param>
 		/// <param name="e">The event that was published</param>
 		/// <returns>True if the event should be handled</returns>
-		protected bool ShouldEventBeHandled(EventRegistration registration, IEvent e)
+		protected bool ShouldEventBeHandled(EventRegistration registration, object e)
 		{
 			var eventType = e.GetType();
 			var registrationEventType = registration.EventType;

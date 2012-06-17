@@ -25,7 +25,7 @@ namespace Nvents.Services.Wcf
 
 		abstract protected Binding GetBinding();
 
-		public void Publish(IEvent @event)
+		public void Publish(object @event)
 		{
 			foreach (var server in GetServers())
 			{

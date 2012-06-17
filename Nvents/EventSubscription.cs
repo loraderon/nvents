@@ -7,7 +7,7 @@ namespace Nvents
 	/// Wraps subscriptions using standard event handling
 	/// </summary>
 	/// <typeparam name="TEvent">The type of event to handle</typeparam>
-	public class EventSubscription<TEvent> where TEvent : class, IEvent
+	public class EventSubscription<TEvent> where TEvent : class
 	{
 		/// <summary>
 		/// The event that will be raised when an corresponding event is published

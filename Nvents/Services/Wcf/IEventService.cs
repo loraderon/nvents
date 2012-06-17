@@ -8,6 +8,6 @@ namespace Nvents.Services.Wcf
 	{
 		[OperationContract(IsOneWay = true)]
 		[EncryptableNetDataContractFormatAttribute]
-		void Publish(IEvent @event);
+		void Publish(object @event);
 	}
 }

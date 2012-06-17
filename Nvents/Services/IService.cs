@@ -9,7 +9,7 @@ namespace Nvents.Services
 		/// </summary>
 		/// <typeparam name="TEvent">The type of event to unsubscribe</typeparam>
 		void Unsubscribe<TEvent>()
-				where TEvent : class, IEvent;
+				where TEvent : class;
 		
 		/// <summary>
 		/// Unregisters an event handler
@@ -17,7 +17,7 @@ namespace Nvents.Services
 		/// <typeparam name="TEvent">The event type for the event handler</typeparam>
 		/// <param name="handler">The event handler to unregister</param>
 		void UnregisterHandler<TEvent>(IHandler<TEvent> handler)
-				where TEvent : class, IEvent;
+				where TEvent : class;
 
 		/// <summary>
 		/// Unregisters an event handler

@@ -9,6 +9,6 @@ namespace Nvents.Services
 		/// </summary>
 		/// <typeparam name="TEvent">The event type to publish.</typeparam>
 		/// <param name="event">The event to publish.</param>
-		void Publish<TEvent>(TEvent @event) where TEvent : class, IEvent;
+		void Publish<TEvent>(TEvent @event) where TEvent : class;
 	}
 }

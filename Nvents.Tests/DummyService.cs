@@ -17,8 +17,8 @@ namespace Nvents.Tests
 			}
 		}
 
-		private List<IEvent> publishedEvents = new List<IEvent>();
-		public IEvent[] PublishedEvents
+        private List<object> publishedEvents = new List<object>();
+        public object[] PublishedEvents
 		{
 			get
 			{
