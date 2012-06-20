@@ -2,6 +2,10 @@
 ----------------
 Release history:
 ----------------
+0.7 2012-06-17
+
+  * Removed IEvent and added NamedPipesService [nvents 0.7 with poco and IPC support] [4]
+
 0.6 2011-03-08
 
   * Added support for .NET 3.5 (custom udp based service locator) [nvents 0.6 now runs on .NET 3.5 and 4.0] [3]
@@ -32,6 +36,7 @@ Release history:
   [1]: http://nvents.org/post/2010/11/09/Encryption-handlers-and-filters-in-version-03.aspx
   [2]: http://nvents.org/post/2010/12/13/Performance-improvements-and-inheritance-support-in-nvents-04.aspx
   [3]: http://nvents.org/post/2011/03/09/nvents-06-now-runs-on-NET-35-and-40.aspx
+  [4]: http://nvents.org/post/2012/06/18/nvents-07-with-poco-and-IPC-support.aspx
 
 Sample code
 
@@ -55,7 +60,7 @@ Sample code
 		}
 	  }
 
-	  public class FooEvent : IEvent
+	  public class FooEvent
 	  {
 		public string Bar { get; set; }
 	  }
