@@ -27,21 +27,24 @@ namespace Nvents.Services.Wcf
 
 		public void Publish(object @event)
 		{
-			foreach (var server in GetServers())
-			{
-				ThreadPool.QueueUserWorkItem(state =>
-				{
-					var s = state as IEventService;
-					try
-					{
-						s.Publish(@event);
-					}
-					catch (TimeoutException)
-					{
-						RemoveServer(s);
-					}
-				}, server);
-			}
+            ThreadPool.QueueUserWorkItem(_ =>
+            {
+                foreach (var server in GetServers())
+                {
+                    ThreadPool.QueueUserWorkItem(state =>
+                    {
+                        var s = state as IEventService;
+                        try
+                        {
+                            s.Publish(@event);
+                        }
+                        catch (TimeoutException)
+                        {
+                            RemoveServer(s);
+                        }
+                    }, server);
+                }
+            });
 		}
 
 		private IEnumerable<IEventService> GetServers()
