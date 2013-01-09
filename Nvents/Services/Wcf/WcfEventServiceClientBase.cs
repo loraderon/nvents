@@ -16,6 +16,13 @@ namespace Nvents.Services.Wcf
 		Dictionary<EndpointAddress, IEventService> servers = new Dictionary<EndpointAddress, IEventService>();
 		ReaderWriterLockSlim locker = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 		DateTime lastDiscoveryLookup = DateTime.Now.AddDays(-1);
+		public event EventHandler<PublishErrorEventArgs> PublishError;
+
+		protected virtual void OnPublishError(PublishErrorEventArgs e)
+		{
+			EventHandler<PublishErrorEventArgs> handler = PublishError;
+			if (handler != null) handler(this, e);
+		}
 
 		public WcfEventServiceClientBase(string encryptionKey)
 		{
@@ -38,13 +45,28 @@ namespace Nvents.Services.Wcf
                         {
                             s.Publish(@event);
                         }
-                        catch (TimeoutException)
+                        catch (TimeoutException toe)
                         {
-                            RemoveServer(s);
+	                        HandleException(@event, s, toe);
                         }
+                        catch (Exception ex)
+						{
+							HandleException(@event, s, ex);
+						}
                     }, server);
                 }
             });
+		}
+
+		private void HandleException(object @event, IEventService service, Exception exception)
+		{
+			var server = servers.SingleOrDefault(x => x.Value == service);
+			string destination = "UNKNOWN";
+			if (!server.Equals(default(KeyValuePair<EndpointAddress,IEventService>)))
+				destination = server.Key.Uri.ToString();
+
+			OnPublishError(new PublishErrorEventArgs(@event, destination, exception));
+			RemoveServer(service);
 		}
 
 		private IEnumerable<IEventService> GetServers()

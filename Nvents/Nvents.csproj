@@ -65,6 +65,7 @@
     <Compile Include="Events.cs" />
     <Compile Include="IHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PublishErrorEventArgs.cs" />
     <Compile Include="Services\EventRegistration.cs" />
     <Compile Include="EventSubscription.cs" />
     <Compile Include="Services\InMemoryService.cs" />

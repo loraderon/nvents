@@ -170,6 +170,13 @@ namespace Nvents.Services
 			}
 		}
 
+		public event EventHandler<PublishErrorEventArgs> PublishError;
+		protected virtual void OnPublishError(PublishErrorEventArgs e)
+		{
+			EventHandler<PublishErrorEventArgs> handler = PublishError;
+			if (handler != null) handler(this, e);
+		}
+
 		/// <summary>
 		/// Determines whether a published event should be handled by the specified event handler
 		/// </summary>

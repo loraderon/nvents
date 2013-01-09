@@ -39,5 +39,7 @@ namespace Nvents.Services
 		/// Stops the service
 		/// </summary>
 		void Stop();
+
+		event EventHandler<PublishErrorEventArgs> PublishError;
 	}
 }

@@ -36,7 +36,14 @@ namespace Nvents.Services
 
 		protected override WcfEventServiceClientBase CreateClient(string encryptionKey)
 		{
-			return new TcpEventServiceClient(encryptionKey);
+			var client = new TcpEventServiceClient(encryptionKey);
+			client.PublishError += ClientOnPublishError;
+			return client;
+		}
+
+		private void ClientOnPublishError(object sender, PublishErrorEventArgs publishErrorEventArgs)
+		{
+			OnPublishError(publishErrorEventArgs);
 		}
 
 		protected override IEventServiceHost CreateEventServiceHost(string encryptionKey)
