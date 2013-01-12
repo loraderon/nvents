@@ -95,6 +95,10 @@ namespace Nvents.Services.Wcf
 				{
 					continue;
 				}
+				catch (CommunicationObjectFaultedException)
+				{
+					continue;
+				}
 				servers[address] = server;
 				yield return server;
 			}
