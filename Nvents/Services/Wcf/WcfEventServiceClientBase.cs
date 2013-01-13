@@ -36,7 +36,7 @@ namespace Nvents.Services.Wcf
 		{
             ThreadPool.QueueUserWorkItem(_ =>
             {
-                foreach (var server in GetServers())
+                foreach (var server in GetServers(@event))
                 {
                     ThreadPool.QueueUserWorkItem(state =>
                     {
@@ -69,7 +69,7 @@ namespace Nvents.Services.Wcf
 			RemoveServer(service);
 		}
 
-		private IEnumerable<IEventService> GetServers()
+		private IEnumerable<IEventService> GetServers(object @event)
 		{
 			locker.EnterUpgradeableReadLock();
 			foreach (var server in servers.Values.ToArray())
@@ -91,12 +91,9 @@ namespace Nvents.Services.Wcf
 				{
 					connection.Open();
 				}
-				catch (EndpointNotFoundException)
+				catch (Exception ex)
 				{
-					continue;
-				}
-				catch (CommunicationObjectFaultedException)
-				{
+					HandleException(@event, server, ex);
 					continue;
 				}
 				servers[address] = server;
