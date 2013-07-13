@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
 using Nvents.Services;
 
 namespace Nvents
@@ -77,6 +79,29 @@ namespace Nvents
 			Service.UnregisterHandler(handler);
 		}
 
+		/// <summary>
+		/// Registers handlers from assemblies.
+		/// </summary>
+		/// <param name="assemblies">The assemblies to scan for handlers.</param>
+		public static void RegisterHandlers(params Assembly[] assemblies)
+		{
+			if (assemblies == null)
+				return;
+			var handlers = assemblies
+				.Where(a => a != null)
+				.SelectMany(assembly => 
+					assembly.GetTypes()
+						.Where(type => IsAssignableToGenericType(type, typeof(IHandler<>))))
+						.Where(type => type.IsClass)
+						.Where(type => !type.IsAbstract)
+						.Where(type => type.GetConstructor(Type.EmptyTypes) != null)
+						.Select(Activator.CreateInstance);
+			foreach (var handler in handlers)
+			{
+				RegisterHandler(handler);
+			}
+		}
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static IService Service
 		{
@@ -104,6 +129,25 @@ namespace Nvents
 		public new static bool ReferenceEquals(object objA, object objB)
 		{
 			return object.ReferenceEquals(objA, objB);
+		}
+
+		private static bool IsAssignableToGenericType(Type givenType, Type genericType)
+		{
+			var interfaceTypes = givenType.GetInterfaces();
+
+			if (interfaceTypes.Any(it => it.IsGenericType && it.GetGenericTypeDefinition() == genericType))
+			{
+				return true;
+			}
+
+			if (givenType.IsGenericType && givenType.GetGenericTypeDefinition() == genericType)
+				return true;
+
+			var baseType = givenType.BaseType;
+			if (baseType == null)
+				return false;
+
+			return IsAssignableToGenericType(baseType, genericType);
 		}
 	}
 }

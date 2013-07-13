@@ -45,5 +45,7 @@ namespace Chat.Moderator.Tests.Fakes
         {
             LastEventTypeSubscription = typeof(TEvent);
         }
+
+        public event EventHandler<PublishErrorEventArgs> PublishError;
     }
 }
