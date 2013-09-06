@@ -53,6 +53,15 @@ namespace Nvents.Services
 			registrations.RemoveAll(x => x.EventType == typeof(TEvent));
 		}
 
+        /// <summary>
+        /// Unsubscribes all events of the specified type
+        /// </summary>
+        /// <typeparam name="TEvent">The type of event to unsubscribe</typeparam>
+        public void Unsubscribe<TEvent>(Action<TEvent> action) where TEvent : class
+        {
+            registrations.RemoveAll(x => x.SourceAction.Equals(action));
+        }
+
 		/// <summary>
 		/// Register an event handler.
 		/// </summary>
