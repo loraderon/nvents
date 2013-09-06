@@ -1,4 +1,5 @@
 using System;
+using Nvents.Services.Wcf;
 
 namespace Nvents.Services
 {
@@ -9,6 +10,7 @@ namespace Nvents.Services
 	{
 		public void SetHandler<TEvent>(Action<TEvent> action, Func<TEvent, bool> filter) where TEvent : class
 		{
+		    SourceAction = action;
 			Action = e =>
 			{
 				var @event = e as TEvent;
@@ -33,5 +35,6 @@ namespace Nvents.Services
 
 		public Type EventType { get; private set; }
 		public Action<object> Action { get; private set; }
+        public object SourceAction { get; private set; }
 	}
 }
