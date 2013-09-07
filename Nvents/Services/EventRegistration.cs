@@ -1,5 +1,4 @@
 using System;
-using Nvents.Services.Wcf;
 
 namespace Nvents.Services
 {
