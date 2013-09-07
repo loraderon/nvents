@@ -137,6 +137,21 @@ namespace Nvents.Tests
 			Assert.False(Events.Service.IsStarted);
 		}
 
+        [Fact]
+        public void CanUnregisterSingleSubscriptions()
+        {
+            var subscriptions = new DummyFooSubscriptions();
+            Events.Subscribe<FooEvent>(subscriptions.FirstFooSubscription);
+            Events.Subscribe<FooEvent>(subscriptions.SecondFooSubscription);
+
+            Events.Unsubscribe<FooEvent>(subscriptions.SecondFooSubscription);
+
+            Events.Publish(new FooEvent());
+
+            Assert.True(subscriptions.FirstFooWasHandled);
+            Assert.False(subscriptions.SecondFooWasHandled);
+        }
+
 		DummyService service;
 
 		public ServiceBaseTest()

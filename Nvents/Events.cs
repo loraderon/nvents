@@ -40,6 +40,11 @@ namespace Nvents
 			Service.Unsubscribe<TEvent>();
 		}
 
+        public static void Unsubscribe<TEvent>(Action<TEvent> action) where TEvent : class
+        {
+            Service.Unsubscribe(action);
+        }
+
 		/// <summary>
 		/// Register an event handler.
 		/// </summary>
@@ -149,5 +154,5 @@ namespace Nvents
 
 			return IsAssignableToGenericType(baseType, genericType);
 		}
-	}
+    }
 }

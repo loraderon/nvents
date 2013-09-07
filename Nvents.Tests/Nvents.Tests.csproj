@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BarEvent.cs" />
+    <Compile Include="DummyFooSubscriptions.cs" />
     <Compile Include="DummyHandler.cs" />
     <Compile Include="DummyService.cs" />
     <Compile Include="EncryptionTests.cs" />
