@@ -192,7 +192,7 @@ namespace Nvents.Services
 		/// <param name="registration">The internal event registration</param>
 		/// <param name="e">The event that was published</param>
 		/// <returns>True if the event should be handled</returns>
-		protected bool ShouldEventBeHandled(EventRegistration registration, object e)
+		protected virtual bool ShouldEventBeHandled(EventRegistration registration, object e)
 		{
 			var eventType = e.GetType();
 			var registrationEventType = registration.EventType;
@@ -201,13 +201,10 @@ namespace Nvents.Services
 				.GetInterfaces()
 				.Where(x => x.Name == typeof(IHandler<>).Name);
 
-			if (registrationInterfaces.Count() > 0)
+			if(registrationInterfaces
+				.Any(x => x.GetGenericArguments().FirstOrDefault() == eventType))
 			{
-				if(registrationInterfaces
-					.Any(x => x.GetGenericArguments().FirstOrDefault() == eventType))
-				{
-					registrationEventType = eventType;
-				}
+				registrationEventType = eventType;
 			}
 
 			return registrationEventType == eventType
