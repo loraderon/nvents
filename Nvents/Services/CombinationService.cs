@@ -12,6 +12,8 @@ namespace Nvents.Services
 	/// </summary>
 	public class CombinationService : ServiceBase
 	{
+        private int lastEventNumber;
+
         public List<IService> Services { get; private set; }
 
 	    readonly System.Timers.Timer timer = new System.Timers.Timer(60000) { AutoReset = false };
@@ -22,7 +24,7 @@ namespace Nvents.Services
 	        set
 	        {
 	            timeLimit = value;
-	            timer.Interval = value.Milliseconds;
+	            timer.Interval = value.TotalMilliseconds;
 	        }
 	    }
 
@@ -33,31 +35,12 @@ namespace Nvents.Services
         /// </summary>
         public DuplicateSuppressionOption DuplicateSuppression { get; set; }
 
-        readonly ConcurrentDictionary<Guid, Tuple<int, DateTime>> alreadyProcessedEvents = new ConcurrentDictionary<Guid, Tuple<int, DateTime>>();
+        readonly ConcurrentDictionary<object, Tuple<int, DateTime>> alreadyProcessedEvents = new ConcurrentDictionary<object, Tuple<int, DateTime>>();
 
 	    public CombinationService(params IService[] services)
 	    {
 	        DuplicateSuppression = DuplicateSuppressionOption.All;
 	        Services = services.ToList();
-	    }
-
-	    private void CleanupProcessedEvents(object sender, ElapsedEventArgs e)
-	    {
-	        try
-	        {
-                Tuple<int, DateTime> dummy;
-                DateTime earliestAllowedTime = DateTime.UtcNow.Subtract(UniqueCheckTimeLimit);
-                var expiredKeys = alreadyProcessedEvents
-                                    .Where(pair => pair.Value.Item2 < earliestAllowedTime)
-                                    .Select(pair => pair.Key).ToList();
-                foreach (var key in expiredKeys)
-                    alreadyProcessedEvents.TryRemove(key, out dummy);
-	        }
-	        catch
-	        {
-	        }
-
-            timer.Start();
 	    }
 
 	    protected override void OnStart()
@@ -83,42 +66,37 @@ namespace Nvents.Services
             }
         }
 
+        public override void Publish<TEvent>(TEvent e)
+        {
+            object nvent = DuplicateSuppression == DuplicateSuppressionOption.All
+                            ? new UniqueEventWrapper(e)
+                            : (object)e;
+
+            foreach (IService service in Services)
+                service.Publish(nvent);
+        }
+
 	    private void HandleEvent(object nvent)
 	    {
-            foreach (var registration in registrations
-                .Where(x => ShouldEventBeHandled(x, nvent)))
-            {
-                // Unwrap if wrapped for DuplicateSuppression == All
-                //  so correct event is passed to handler
-                object nvent2 = UnwrapEvent(nvent);
-                ThreadPool.QueueUserWorkItem(s =>
-                    ((EventRegistration)s).Action(nvent2), registration);
-            }
-	    }
-
-	    private int lastEventNumber;
-	    protected override bool ShouldEventBeHandled(EventRegistration registration, object e)
-	    {
-            if (DuplicateSuppression != DuplicateSuppressionOption.None)
+            // Check if event has already been processed
+	        if (DuplicateSuppression != DuplicateSuppressionOption.None)
 	        {
                 // Make sure Unique event is only handled once
                 // Assign a number each time an event is processed, only process the event
                 // if the same number is in the dictionary (indicated it was just added this time around)
-	            IUniqueNvent unique = e as IUniqueNvent;
-	            if (unique != null)
-	            {
-                    int localNumber = Interlocked.Increment(ref lastEventNumber);
-	                var eventData = alreadyProcessedEvents.GetOrAdd(unique.ID, new Tuple<int, DateTime>(localNumber, DateTime.UtcNow));
-	                if (eventData.Item1 != localNumber)
-                        return false;
-	            }
+                
+                int localNumber = Interlocked.Increment(ref lastEventNumber);
+                var eventData = alreadyProcessedEvents.GetOrAdd(nvent, new Tuple<int, DateTime>(localNumber, DateTime.UtcNow));
+                if (eventData.Item1 != localNumber)
+                    return;
+            }
 
-                // Unwrap if wrapped for DuplicateSuppression == All
-                //  so base.ShouldEventBeHandled checks the correct type
-                e = UnwrapEvent(e);
-	        }
+            // Unwrap if wrapped for DuplicateSuppression == All
+            //  so correct event is passed to handler
+            object baseNvent = UnwrapEvent(nvent);
 
-	        return base.ShouldEventBeHandled(registration, e);
+	        foreach (var registration in registrations.Where(x => ShouldEventBeHandled(x, baseNvent)))
+                registration.Action.Invoke(baseNvent);
 	    }
 
 	    private static object UnwrapEvent(object nvent)
@@ -129,22 +107,30 @@ namespace Nvents.Services
 	        return nvent;
 	    }
 
-	    public override void Publish<TEvent>(TEvent e)
-		{
-            object nvent = DuplicateSuppression==DuplicateSuppressionOption.All 
-                            && !(e is IUniqueNvent)
-                            ? new UniqueEventWrapper(e)
-                            : (object)e;
+        private void CleanupProcessedEvents(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                Tuple<int, DateTime> dummy;
+                DateTime earliestAllowedTime = DateTime.UtcNow.Subtract(UniqueCheckTimeLimit);
+                var expiredKeys = alreadyProcessedEvents
+                                    .Where(pair => pair.Value.Item2 < earliestAllowedTime)
+                                    .Select(pair => pair.Key).ToList();
+                foreach (var key in expiredKeys)
+                    alreadyProcessedEvents.TryRemove(key, out dummy);
+            }
+            catch
+            {
+            }
 
-			foreach(IService service in Services)
-                service.Publish(nvent);
-		}
+            timer.Start();
+        }
 	}
 
     public enum DuplicateSuppressionOption
     {
         All,
-        UniqueOnly,
+        UseEquals,
         None
     }
 }

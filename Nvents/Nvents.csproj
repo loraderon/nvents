@@ -70,7 +70,6 @@
     <Compile Include="EventSubscription.cs" />
     <Compile Include="Services\CombinationService.cs" />
     <Compile Include="Services\InMemoryService.cs" />
-    <Compile Include="Services\IUniqueNvent.cs" />
     <Compile Include="Services\UniqueEventWrapper.cs" />
     <Compile Include="Services\Wcf\NamedPipesEventServiceClient.cs" />
     <Compile Include="Services\Wcf\NamedPipesEventServiceHost.cs" />

@@ -35,7 +35,7 @@ namespace Nvents.Tests
         public void CanFilterDuplicateEventWhenUnqiueOnly()
         {
             int count = 0;
-            service.DuplicateSuppression = DuplicateSuppressionOption.UniqueOnly;
+            service.DuplicateSuppression = DuplicateSuppressionOption.UseEquals;
             Events.Subscribe<UniqueEvent>(e => count++);
 
             Test.WaitFor(() => count == 2, TimeSpan.FromSeconds(1), () =>
@@ -44,20 +44,6 @@ namespace Nvents.Tests
             Assert.True(count == 1, "UniqueEvent was raised more than once");
         }
         
-        [Fact]
-        public void DoesNotFilterDuplicateEventWhenUniqueOnly()
-        {
-            int count = 0;
-            int expectedCount = service.Services.Count;
-            service.DuplicateSuppression = DuplicateSuppressionOption.UniqueOnly;
-            Events.Subscribe<FooEvent>(e => count++);
-
-            Test.WaitFor(() => count == expectedCount, TimeSpan.FromSeconds(1), () =>
-                Events.Publish(new FooEvent()));
-
-            Assert.True(count == expectedCount, String.Format("FooEvent was not raised {0} times", expectedCount));
-        }
-
         [Fact]
         public void CanFilterDuplicateEventWhenSuppressAll()
         {
@@ -76,11 +62,29 @@ namespace Nvents.Tests
         }
 
         [Fact]
+        public void CanFilterDuplicateEventWhenSuppressAllAndMultipleSubscriptions()
+        {
+            int count = 0;
+            service.DuplicateSuppression = DuplicateSuppressionOption.All;
+            Events.Subscribe<UniqueEvent>(_=>{});
+            Events.Subscribe<FooEvent>(e =>
+            {
+                if (e != null)
+                    count++;
+            });
+
+            Test.WaitFor(() => count == 2, TimeSpan.FromSeconds(1), () =>
+                Events.Publish(new FooEvent()));
+
+            Assert.True(count == 1, "UniqueEvent was raised more than once");
+        }
+
+        [Fact]
         public void ExpiresOldUniqueEvents()
         {
             int count = 0;
             service.UniqueCheckTimeLimit = TimeSpan.FromMilliseconds(10);
-            service.DuplicateSuppression = DuplicateSuppressionOption.UniqueOnly;
+            service.DuplicateSuppression = DuplicateSuppressionOption.UseEquals;
             Events.Subscribe<UniqueEvent>(e => count++);
 
             UniqueEvent nvent = new UniqueEvent { ID = Guid.NewGuid() };
