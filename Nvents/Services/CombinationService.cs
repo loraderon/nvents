@@ -31,7 +31,7 @@ namespace Nvents.Services
         /// <summary>
         /// Setting to All causes all duplicate events to be filtered. 
         /// Setting to None will cause duplicate events to be handled again. 
-        /// Setting to UniqueOnly will suppress events that implement IUniqueNvent. 
+        /// Setting to UseEquals will suppress events that already been processed based on the Equals method. 
         /// </summary>
         public DuplicateSuppressionOption DuplicateSuppression { get; set; }
 
