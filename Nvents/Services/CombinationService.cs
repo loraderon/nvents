@@ -129,8 +129,20 @@ namespace Nvents.Services
 
     public enum DuplicateSuppressionOption
     {
+        /// <summary>
+        /// All will wrap all events and filter duplicates received for the same event
+        ///  based on a Guid in the wrapper
+        /// </summary>
         All,
+        /// <summary>
+        /// UseEquals will filter events that have already been received 
+        ///  if a matching object has been received based on the events Equals method
+        /// </summary>
         UseEquals,
+        /// <summary>
+        /// None will process all received events, regardless of whether or not they 
+        /// have previously been received and processed
+        /// </summary>
         None
     }
 }
