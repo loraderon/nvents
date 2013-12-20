@@ -68,7 +68,9 @@
     <Compile Include="PublishErrorEventArgs.cs" />
     <Compile Include="Services\EventRegistration.cs" />
     <Compile Include="EventSubscription.cs" />
+    <Compile Include="Services\CombinationService.cs" />
     <Compile Include="Services\InMemoryService.cs" />
+    <Compile Include="Services\UniqueEventWrapper.cs" />
     <Compile Include="Services\Wcf\NamedPipesEventServiceClient.cs" />
     <Compile Include="Services\Wcf\NamedPipesEventServiceHost.cs" />
     <Compile Include="Services\Wcf\TcpEventServiceClient.cs" />

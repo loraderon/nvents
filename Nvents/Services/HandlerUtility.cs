@@ -24,8 +24,8 @@ namespace Nvents.Services
 					.IsClass
 				select p.ParameterType;
 
-			if (eventTypes.Count() == 0)
-				throw new ArgumentException(string.Format("Handler {0} does not contain any methods named Handle which accepts only one parameter with type that derives from IEvent.", handler.GetType().Name));
+			if (!eventTypes.Any())
+				throw new ArgumentException(string.Format("Handler {0} does not contain any methods named Handle which accepts only one parameter that is a class (not a value type).", handler.GetType().Name));
 			return eventTypes.ToArray();
 		}
 	}
