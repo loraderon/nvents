@@ -63,6 +63,25 @@ namespace Nvents.Tests
 			Assert.True(handler.BarHandled, "BarEvent was not handled");
 		}
 
+        [Fact]
+        public void CanRegisterHandlerWithInheritedEvents()
+        {
+            var objHandler = new GenericObjectHandler();
+            Events.RegisterHandler(objHandler);
+            var fooHandler = new FooEventHandler();
+            Events.RegisterHandler(fooHandler);
+            var childHandler = new FooChildEventHandler();
+            Events.RegisterHandler(childHandler);
+
+            Events.Publish(new FooEvent());
+            Events.Publish(new FooChildEvent());
+            Events.Publish(new BarEvent());
+
+            Assert.Equal(3, objHandler.NumberOfEvents);
+            Assert.Equal(2, fooHandler.NumberOfEvents);
+            Assert.Equal(1, childHandler.NumberOfEvents);
+        }
+
 		[Fact]
 		public void CanFilterEvents()
 		{

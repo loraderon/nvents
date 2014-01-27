@@ -29,11 +29,13 @@ namespace Nvents.Services
 					return;
 				handler.Handle(@event);
 			};
-			EventType = handler.GetType();
+            EventType = typeof(TEvent);
+            Handler = handler;
 		}
 
 		public Type EventType { get; private set; }
 		public Action<object> Action { get; private set; }
         public object SourceAction { get; private set; }
+        public object Handler { get; private set;}
 	}
 }

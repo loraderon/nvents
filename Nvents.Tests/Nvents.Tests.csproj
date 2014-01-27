@@ -76,6 +76,9 @@
     <Compile Include="EventSubscriptionTests.cs" />
     <Compile Include="FooBarHandler.cs" />
     <Compile Include="FooChildEvent.cs" />
+    <Compile Include="FooChildEventHandler.cs" />
+    <Compile Include="FooEventHandler.cs" />
+    <Compile Include="GenericObjectHandler.cs" />
     <Compile Include="UniqueEvent.cs" />
     <Compile Include="FooEvent.cs" />
     <Compile Include="CombinationServiceTests.cs" />

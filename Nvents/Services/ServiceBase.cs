@@ -50,7 +50,7 @@ namespace Nvents.Services
 		/// <typeparam name="TEvent">The type of event to unsubscribe</typeparam>
 		public void Unsubscribe<TEvent>() where TEvent : class
 		{
-			registrations.RemoveAll(x => x.EventType == typeof(TEvent));
+			registrations.RemoveAll(x => x.EventType == typeof(TEvent) && x.Handler==null);
 		}
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace Nvents.Services
 		/// <param name="handler">The event handler to unregister</param>
 		public void UnregisterHandler<TEvent>(IHandler<TEvent> handler) where TEvent : class
 		{
-			registrations.RemoveAll(x => x.EventType == handler.GetType());
+			registrations.RemoveAll(x => x.EventType == typeof(TEvent) && x.Handler == handler);
 		}
 
 		/// <summary>
@@ -196,17 +196,6 @@ namespace Nvents.Services
 		{
 			var eventType = e.GetType();
 			var registrationEventType = registration.EventType;
-
-			var registrationInterfaces = registrationEventType
-				.GetInterfaces()
-				.Where(x => x.Name == typeof(IHandler<>).Name);
-
-			if(registrationInterfaces
-				.Any(x => x.GetGenericArguments().FirstOrDefault() == eventType))
-			{
-				registrationEventType = eventType;
-			}
-
 			return registrationEventType == eventType
 				|| eventType.IsSubclassOf(registrationEventType)
 				|| eventType.GetInterface(registrationEventType.Name) == registrationEventType;
